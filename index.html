@@ -1,0 +1,473 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Personalized Dental — Hygienist Tool</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:#F0F4F8;min-height:100vh;display:flex;align-items:flex-start;justify-content:center;padding:1.5rem 1rem}
+:root{
+  --brand:#1B4F8A;--brand-light:#E6F1FB;--brand-dark:#0C447C;
+  --success:#0F6E56;--success-light:#E1F5EE;
+  --text:#1a1a1a;--text-2:#6B7280;--text-3:#9CA3AF;
+  --bg:#fff;--bg-2:#F9FAFB;--bg-3:#F3F4F6;
+  --border:#E5E7EB;--border-2:#D1D5DB;
+  --r:14px;--r-sm:8px;
+}
+.app{background:#fff;border-radius:var(--r);box-shadow:0 4px 24px rgba(0,0,0,0.08);width:100%;max-width:480px;overflow:hidden}
+.screen{display:none}.screen.active{display:block}
+
+.bar{background:var(--brand);padding:1rem 1.25rem;display:flex;align-items:center;gap:10px}
+.bar-logo{width:34px;height:34px;background:rgba(255,255,255,0.15);border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0}
+.bar-title{color:#fff;font-size:15px;font-weight:600}
+.bar-sub{color:rgba(255,255,255,0.6);font-size:11px;margin-top:1px}
+.bar-right{margin-left:auto}
+
+.slbl{font-size:11px;font-weight:600;color:var(--text-2);letter-spacing:0.07em;text-transform:uppercase;padding:1rem 1.25rem 0.4rem}
+.hint{font-size:13px;color:var(--text-2);padding:0 1.25rem 0.875rem;line-height:1.5}
+
+.field-group{padding:0 1.25rem 0.875rem;display:flex;flex-direction:column;gap:10px}
+.field label{display:block;font-size:12px;font-weight:500;color:var(--text-2);margin-bottom:5px}
+.field input{width:100%;padding:9px 12px;border:1px solid var(--border-2);border-radius:var(--r-sm);font-size:14px;color:var(--text);background:#fff;transition:border-color 0.15s}
+.field input:focus{outline:none;border-color:var(--brand);box-shadow:0 0 0 3px rgba(27,79,138,0.1)}
+.field-row{display:grid;grid-template-columns:1fr 80px;gap:10px}
+
+.cat-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(118px,1fr));gap:8px;padding:0 1.25rem 1rem}
+.cat-card{border:1px solid var(--border);border-radius:var(--r);padding:1rem 0.5rem 0.875rem;cursor:pointer;text-align:center;background:#fff;transition:all 0.15s;user-select:none;position:relative}
+.cat-card:hover{border-color:#2E75B6;background:var(--brand-light);transform:translateY(-1px)}
+.cat-card.sel{border:2px solid var(--brand);background:var(--brand-light)}
+.cat-icon{font-size:28px;display:block;margin-bottom:6px}
+.cat-name{font-size:12px;font-weight:600;color:var(--text);display:block}
+.cat-card.sel .cat-name{color:var(--brand-dark)}
+.cat-ct{font-size:11px;color:var(--text-3);margin-top:2px;display:block}
+.sdot{width:20px;height:20px;border-radius:50%;background:var(--brand);position:absolute;top:7px;right:7px;display:none;align-items:center;justify-content:center}
+.cat-card.sel .sdot{display:flex}
+
+.prog-wrap{display:flex;align-items:center;gap:10px;padding:0.75rem 1.25rem;border-bottom:1px solid var(--border)}
+.prog-track{flex:1;height:5px;background:var(--bg-3);border-radius:3px;overflow:hidden}
+.prog-fill{height:100%;background:var(--brand);border-radius:3px;transition:width 0.4s cubic-bezier(.4,0,.2,1)}
+.prog-txt{font-size:12px;color:var(--text-2);white-space:nowrap;font-weight:500}
+
+.prod-list{padding:0.625rem 1.25rem 0.875rem;display:flex;flex-direction:column;gap:5px}
+.prod-item{display:flex;align-items:center;gap:10px;padding:10px 12px;border:1px solid var(--border);border-radius:var(--r-sm);cursor:pointer;background:#fff;transition:all 0.12s;user-select:none}
+.prod-item:hover{border-color:#2E75B6;background:var(--brand-light);transform:translateX(2px)}
+.prod-item.sel{border:1.5px solid var(--brand);background:var(--brand-light)}
+.pchk{width:20px;height:20px;border-radius:5px;border:1.5px solid var(--border-2);flex-shrink:0;display:flex;align-items:center;justify-content:center;background:#fff;transition:all 0.12s}
+.prod-item.sel .pchk{background:var(--brand);border-color:var(--brand)}
+.pinfo{flex:1;min-width:0}
+.pname{font-size:13px;color:var(--text);font-weight:500}
+.pbrand{font-size:11px;color:var(--text-2);margin-top:1px}
+.prod-item.sel .pname{color:var(--brand-dark)}
+
+.foot{padding:0.875rem 1.25rem;border-top:1px solid var(--border);display:flex;gap:8px;align-items:center;background:var(--bg-2)}
+.flbl{font-size:13px;color:var(--text-2)}
+.ml{margin-left:auto}
+
+.btn{padding:9px 18px;border-radius:var(--r-sm);font-size:13px;font-weight:500;cursor:pointer;border:1px solid var(--border-2);background:#fff;color:var(--text);transition:all 0.15s;white-space:nowrap}
+.btn:hover{background:var(--bg-3)}
+.btn:active{transform:scale(0.97)}
+.btn-p{background:var(--brand);color:#fff;border-color:var(--brand)}
+.btn-p:hover{background:var(--brand-dark);border-color:var(--brand-dark)}
+.btn-p:disabled{background:var(--border);border-color:transparent;color:var(--text-3);cursor:not-allowed;transform:none}
+.btn-sm{padding:6px 12px;font-size:12px}
+.btn-g{border-color:transparent;background:transparent;color:var(--text-2)}
+.btn-g:hover{background:var(--bg-3);border-color:var(--border)}
+
+.sum-body{padding:1rem 1.25rem}
+.sum-cat{margin-bottom:1rem}
+.sum-cat-hdr{display:flex;align-items:center;gap:8px;margin-bottom:6px}
+.badge{display:inline-flex;padding:2px 8px;border-radius:20px;font-size:11px;font-weight:600;background:var(--brand-light);color:var(--brand-dark)}
+.badge-g{background:var(--success-light);color:var(--success)}
+.sum-prod{font-size:13px;color:var(--text);padding:7px 10px;background:var(--bg-2);border-radius:var(--r-sm);margin-bottom:3px;border-left:3px solid var(--brand)}
+
+.patient-card{background:var(--bg-2);border:1px solid var(--border);border-radius:var(--r-sm);padding:0.875rem 1rem;margin-bottom:1rem;display:flex;align-items:center;gap:10px}
+.patient-avatar{width:36px;height:36px;border-radius:50%;background:var(--brand-light);color:var(--brand-dark);display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:600;flex-shrink:0}
+.patient-name{font-size:14px;font-weight:500;color:var(--text)}
+.patient-email{font-size:12px;color:var(--text-2);margin-top:1px}
+
+/* ── Chart Note Section ── */
+.chart-note-section{border:1px solid var(--border);border-radius:var(--r-sm);padding:1rem;margin-bottom:0.75rem}
+.chart-note-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:0.5rem}
+.chart-note-header h4{font-size:13px;font-weight:600;color:var(--text)}
+.chart-note-header span{font-size:11px;color:var(--text-3)}
+.chart-note-box{font-family:ui-monospace,'SF Mono',Consolas,monospace;font-size:12px;color:var(--text-2);background:var(--bg-2);border:1px solid var(--border);border-radius:var(--r-sm);padding:0.75rem;line-height:1.6;white-space:pre-wrap;word-break:break-word;margin-bottom:0.625rem;user-select:all}
+.btn-copy{width:100%;padding:8px;border-radius:var(--r-sm);font-size:12px;font-weight:500;cursor:pointer;border:1px solid var(--border-2);background:#fff;color:var(--text-2);transition:all 0.15s;display:flex;align-items:center;justify-content:center;gap:6px}
+.btn-copy:hover{background:var(--bg-3)}
+.btn-copy.copied{background:var(--success-light);color:var(--success);border-color:#9FE1CB}
+
+.send-section{border:1px solid var(--border);border-radius:var(--r-sm);padding:1rem;margin-top:0.5rem}
+.send-section h4{font-size:13px;font-weight:600;color:var(--text);margin-bottom:4px}
+.send-section p{font-size:12px;color:var(--text-2);line-height:1.5;margin-bottom:0.75rem}
+
+.status-box{border-radius:var(--r-sm);padding:0.875rem 1rem;font-size:13px;margin-top:0.75rem;display:none;line-height:1.5}
+.status-ok{background:var(--success-light);color:var(--success);border:1px solid #9FE1CB;display:block}
+.status-err{background:#FEF2F2;color:#991B1B;border:1px solid #FECACA;display:block}
+
+.spinner{width:16px;height:16px;border:2px solid rgba(255,255,255,0.4);border-top-color:#fff;border-radius:50%;animation:spin 0.7s linear infinite;display:inline-block;vertical-align:middle;margin-right:6px}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+.loading{padding:2.5rem;text-align:center}
+.load-spin{width:28px;height:28px;border:2px solid var(--border);border-top-color:var(--brand);border-radius:50%;animation:spin 0.7s linear infinite;margin:0 auto 12px}
+.loading p{font-size:13px;color:var(--text-2)}
+</style>
+</head>
+<body>
+<div class="app">
+
+<!-- SCREEN 0: PATIENT INFO -->
+<div id="s-patient" class="screen active">
+  <div class="bar">
+    <div class="bar-logo">🦷</div>
+    <div><div class="bar-title">Personalized Dental</div><div class="bar-sub">Step 1 of 3 — Patient information</div></div>
+  </div>
+  <div class="slbl">Patient details</div>
+  <div class="hint">Enter the patient's information before selecting products. This is used to send their personalized recommendation.</div>
+  <div class="field-group">
+    <div class="field-row">
+      <div class="field">
+        <label>Patient first name</label>
+        <input id="pt-first" type="text" placeholder="e.g. Sarah" autocomplete="off" oninput="validatePatient()"/>
+      </div>
+      <div class="field">
+        <label>Last initial</label>
+        <input id="pt-last" type="text" placeholder="e.g. K" maxlength="1" autocomplete="off" oninput="validatePatient()"/>
+      </div>
+    </div>
+    <div class="field">
+      <label>Patient email address</label>
+      <input id="pt-email" type="email" placeholder="patient@email.com" autocomplete="off" oninput="validatePatient()"/>
+    </div>
+    <div class="field">
+      <label>Office name</label>
+      <input id="pt-office" type="text" placeholder="e.g. Bright Smiles Dental" autocomplete="off"/>
+    </div>
+    <div class="field">
+      <label>Hygienist name <span style="font-weight:400;color:var(--text-3)">(optional)</span></label>
+      <input id="pt-hyg" type="text" placeholder="Your name" autocomplete="off"/>
+    </div>
+  </div>
+  <div class="foot">
+    <div class="ml"><button class="btn btn-p" id="patient-next" disabled onclick="goToCats()">Select categories →</button></div>
+  </div>
+</div>
+
+<!-- SCREEN 1: CATEGORIES -->
+<div id="s-cats" class="screen">
+  <div class="bar">
+    <div class="bar-logo">🦷</div>
+    <div><div class="bar-title">Personalized Dental</div><div class="bar-sub">Step 2 of 3 — Select categories</div></div>
+  </div>
+  <div id="load-state" class="loading"><div class="load-spin"></div><p>Loading products…</p></div>
+  <div id="cats-body" style="display:none">
+    <div class="slbl">Applicable categories</div>
+    <div class="hint">Tap every category that applies to this patient.</div>
+    <div class="cat-grid" id="cat-grid"></div>
+  </div>
+  <div class="foot">
+    <button class="btn btn-sm btn-g" onclick="show('s-patient')">← Back</button>
+    <span class="flbl" id="cat-lbl" style="margin-left:4px">0 selected</span>
+    <div class="ml"><button class="btn btn-p" id="begin-btn" disabled onclick="beginFlow()">Begin →</button></div>
+  </div>
+</div>
+
+<!-- SCREEN 2: PRODUCTS -->
+<div id="s-prods" class="screen">
+  <div class="bar">
+    <span id="prod-icon" style="font-size:22px;flex-shrink:0"></span>
+    <div style="margin-left:8px"><div class="bar-title" id="prod-title"></div><div class="bar-sub">Step 3 of 3 — Select products</div></div>
+  </div>
+  <div class="prog-wrap">
+    <div class="prog-track"><div class="prog-fill" id="prog-fill"></div></div>
+    <span class="prog-txt" id="prog-txt"></span>
+  </div>
+  <div class="prod-list" id="prod-list"></div>
+  <div class="foot">
+    <button class="btn btn-sm btn-g" id="back-btn" onclick="goBack()">← Back</button>
+    <span class="flbl" id="sel-lbl" style="margin-left:4px"></span>
+    <div class="ml"><button class="btn btn-p" id="next-btn" onclick="goNext()">Next →</button></div>
+  </div>
+</div>
+
+<!-- SCREEN 3: SUMMARY -->
+<div id="s-summary" class="screen">
+  <div class="bar">
+    <div class="bar-logo">✅</div>
+    <div><div class="bar-title">Review &amp; send</div><div class="bar-sub" id="sum-sub"></div></div>
+  </div>
+  <div class="sum-body">
+    <div id="patient-card"></div>
+    <div id="sum-cats"></div>
+
+    <!-- Chart Note -->
+    <div class="chart-note-section">
+      <div class="chart-note-header">
+        <h4>📋 Chart note</h4>
+        <span>Tap to select · button to copy</span>
+      </div>
+      <div class="chart-note-box" id="chart-note-text"></div>
+      <button class="btn-copy" id="copy-btn" onclick="copyChartNote()">
+        <svg width="13" height="13" viewBox="0 0 14 14" fill="none"><rect x="4" y="4" width="9" height="9" rx="1.5" stroke="currentColor" stroke-width="1.4"/><path d="M2 10V2h8" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        Copy chart note
+      </button>
+    </div>
+
+    <div class="send-section">
+      <h4>Send recommendation to patient</h4>
+      <p>This will email the patient their personalized product list with links to purchase. Each link uses your affiliate code.</p>
+      <button class="btn btn-p" id="send-btn" onclick="sendRecommendation()" style="width:100%">Send recommendation email</button>
+      <div class="status-box" id="status-box"></div>
+    </div>
+  </div>
+  <div class="foot">
+    <button class="btn btn-sm btn-g" onclick="show('s-prods')">← Back</button>
+    <div class="ml"><button class="btn btn-p btn-sm" onclick="restart()">↺ New patient</button></div>
+  </div>
+</div>
+
+</div>
+
+<script>
+const CSV_URL     = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQN4wQ_5Ah6lAfzAjmhbW1dEVW-Wfls_1fZYftSebz46H-wDM6jbxKIHI24I7A7Nw/pub?gid=2094927736&single=true&output=csv';
+const WEBHOOK_URL = 'https://hooks.zapier.com/hooks/catch/26942788/u7o82w2/';
+
+const DISPLAY_ORDER = ['Toothbrush','Toothbrush / Device','Toothpaste','Floss','Floss / Device','Device / Dental Appliance Care','Mouthwash','Whitening','Whitening / Mouthwash','Dry Mouth / Specialty','High Cavity Risk / Specialty','Supplement','Tongue Care','Other'];
+const ICONS = {'Toothbrush':'🪥','Toothbrush / Device':'🪥','Toothpaste':'🦷','Floss':'🧵','Floss / Device':'🧵','Device / Dental Appliance Care':'🔬','Mouthwash':'🫧','Whitening':'✨','Whitening / Mouthwash':'✨','Dry Mouth / Specialty':'💊','High Cavity Risk / Specialty':'⚕️','Supplement':'💊','Tongue Care':'👅','Other':'➕'};
+const LABELS = {'Toothbrush':'Toothbrush','Toothbrush / Device':'Toothbrush','Floss / Device':'Floss','Device / Dental Appliance Care':'Appliance Care','Whitening / Mouthwash':'Whitening','Dry Mouth / Specialty':'Specialty','High Cavity Risk / Specialty':'Specialty'};
+
+let CATS=[], selectedCats=[], currentIdx=0, selections={};
+
+function chk(){return '<svg width="12" height="9" viewBox="0 0 12 9" fill="none"><path d="M1 4.5L4.5 8L11 1" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>';}
+
+function parseCSV(text){
+  const lines=text.trim().split('\n');
+  const catMap={};
+  lines.slice(1).forEach(line=>{
+    const cols=[];let cur='',inQ=false;
+    for(let i=0;i<line.length;i++){
+      const ch=line[i];
+      if(ch==='"'){inQ=!inQ;}
+      else if(ch===','&&!inQ){cols.push(cur.trim());cur='';}
+      else{cur+=ch;}
+    }
+    cols.push(cur.trim());
+    const id=cols[0]||'',name=cols[1]||'',brand=cols[2]||'',cat=cols[3]||'',link=cols[10]||cols[9]||'';
+    if(!name||!cat||id==='Product ID') return;
+    if(!catMap[cat]) catMap[cat]=[];
+    catMap[cat].push({name,brand,link});
+  });
+  return catMap;
+}
+
+async function loadCatalog(){
+  try{
+    const res=await fetch(CSV_URL);
+    if(!res.ok) throw new Error();
+    const catMap=parseCSV(await res.text());
+    CATS=DISPLAY_ORDER.filter(c=>catMap[c]).map(c=>({key:c.replace(/[^a-z]/gi,'').toLowerCase(),label:LABELS[c]||c,icon:ICONS[c]||'➕',products:catMap[c]}));
+    Object.keys(catMap).filter(c=>!DISPLAY_ORDER.includes(c)).forEach(c=>{CATS.push({key:c.replace(/[^a-z]/gi,'').toLowerCase(),label:c,icon:'➕',products:catMap[c]});});
+  }catch(e){CATS=getFallback();}
+  document.getElementById('load-state').style.display='none';
+  document.getElementById('cats-body').style.display='block';
+  buildCatGrid();
+}
+
+function validatePatient(){
+  const first=document.getElementById('pt-first').value.trim();
+  const last=document.getElementById('pt-last').value.trim();
+  const email=document.getElementById('pt-email').value.trim();
+  document.getElementById('patient-next').disabled=!(first.length>0&&last.length>0&&/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email));
+}
+
+function goToCats(){show('s-cats');if(CATS.length===0) loadCatalog();}
+
+function buildCatGrid(){
+  const g=document.getElementById('cat-grid');g.innerHTML='';
+  CATS.forEach(cat=>{
+    const isSel=selectedCats.includes(cat.key);
+    const d=document.createElement('div');d.className='cat-card'+(isSel?' sel':'');
+    d.innerHTML=`<div class="sdot"><svg width="10" height="8" viewBox="0 0 10 8" fill="none"><path d="M1 4L3.5 6.5L9 1" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div><span class="cat-icon">${cat.icon}</span><span class="cat-name">${cat.label}</span><span class="cat-ct">${cat.products.length} products</span>`;
+    d.onclick=()=>toggleCat(cat.key,d);g.appendChild(d);
+  });
+}
+
+function toggleCat(key,el){
+  el.classList.toggle('sel');
+  if(selectedCats.includes(key)) selectedCats=selectedCats.filter(k=>k!==key);
+  else selectedCats.push(key);
+  const n=selectedCats.length;
+  document.getElementById('cat-lbl').textContent=n===0?'0 selected':`${n} selected`;
+  document.getElementById('begin-btn').disabled=n===0;
+}
+
+function beginFlow(){currentIdx=0;selections={};selectedCats.forEach(k=>selections[k]=[]);showProds();}
+
+function showProds(){
+  const key=selectedCats[currentIdx];
+  const cat=CATS.find(c=>c.key===key);
+  const total=selectedCats.length;
+  document.getElementById('prod-icon').textContent=cat.icon;
+  document.getElementById('prod-title').textContent=cat.label;
+  document.getElementById('prog-fill').style.width=Math.round((currentIdx/total)*100)+'%';
+  document.getElementById('prog-txt').textContent=`Category ${currentIdx+1} of ${total}`;
+  document.getElementById('next-btn').textContent=currentIdx===total-1?'Review summary →':'Next →';
+  document.getElementById('back-btn').style.visibility=currentIdx===0?'hidden':'visible';
+  const list=document.getElementById('prod-list');list.innerHTML='';
+  cat.products.forEach(p=>{
+    const chosen=(selections[key]||[]).includes(p.name);
+    const item=document.createElement('div');item.className='prod-item'+(chosen?' sel':'');
+    item.innerHTML=`<div class="pchk">${chosen?chk():''}</div><div class="pinfo"><div class="pname">${p.name}</div><div class="pbrand">${p.brand}</div></div>`;
+    item.onclick=()=>toggleProd(key,p.name,item);list.appendChild(item);
+  });
+  updateSelLbl(key);show('s-prods');
+}
+
+function toggleProd(key,name,el){
+  el.classList.toggle('sel');
+  const box=el.querySelector('.pchk');
+  if(el.classList.contains('sel')){selections[key].push(name);box.innerHTML=chk();}
+  else{selections[key]=selections[key].filter(n=>n!==name);box.innerHTML='';}
+  updateSelLbl(key);
+}
+
+function updateSelLbl(key){
+  const n=(selections[key]||[]).length;
+  document.getElementById('sel-lbl').textContent=n===0?'None selected':`${n} selected`;
+}
+
+function goNext(){if(currentIdx<selectedCats.length-1){currentIdx++;showProds();}else showSummary();}
+function goBack(){if(currentIdx>0){currentIdx--;showProds();}else show('s-cats');}
+
+function buildChartNote(){
+  const first=document.getElementById('pt-first').value.trim();
+  const last=document.getElementById('pt-last').value.trim().toUpperCase();
+  const hyg=document.getElementById('pt-hyg').value.trim();
+  const office=document.getElementById('pt-office').value.trim();
+  const date=new Date().toLocaleDateString('en-US',{year:'numeric',month:'long',day:'numeric'});
+  const lines=[];
+  lines.push('Chart Note — Personalized Dental');
+  lines.push(`Date: ${date}`);
+  if(office) lines.push(`Office: ${office}`);
+  if(hyg)    lines.push(`Provider: ${hyg}`);
+  lines.push(`Patient: ${first} ${last}.`);
+  lines.push('');
+  lines.push('Products discussed and recommended at today\'s visit:');
+  selectedCats.forEach(key=>{
+    const cat=CATS.find(c=>c.key===key);
+    const prods=selections[key]||[];
+    if(!prods.length) return;
+    lines.push('');
+    lines.push(`${cat.label}:`);
+    prods.forEach(name=>{
+      const p=cat.products.find(x=>x.name===name)||{};
+      const brand=p.brand?` (${p.brand})`:'';
+      lines.push(`  - ${name}${brand}`);
+    });
+  });
+  lines.push('');
+  lines.push('Patient emailed personalized product recommendations via Personalized Dental platform.');
+  return lines.join('\n');
+}
+
+function copyChartNote(){
+  const text=document.getElementById('chart-note-text').textContent;
+  const btn=document.getElementById('copy-btn');
+  const doneState=()=>{
+    btn.classList.add('copied');
+    btn.innerHTML=`<svg width="13" height="13" viewBox="0 0 14 14" fill="none"><path d="M2 7.5L5.5 11L12 3" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg> Copied!`;
+    setTimeout(()=>{
+      btn.classList.remove('copied');
+      btn.innerHTML=`<svg width="13" height="13" viewBox="0 0 14 14" fill="none"><rect x="4" y="4" width="9" height="9" rx="1.5" stroke="currentColor" stroke-width="1.4"/><path d="M2 10V2h8" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg> Copy chart note`;
+    },2200);
+  };
+  navigator.clipboard.writeText(text).then(doneState).catch(()=>{
+    const ta=document.createElement('textarea');
+    ta.value=text;ta.style.position='fixed';ta.style.opacity='0';
+    document.body.appendChild(ta);ta.focus();ta.select();
+    document.execCommand('copy');document.body.removeChild(ta);
+    doneState();
+  });
+}
+
+function showSummary(){
+  const first=document.getElementById('pt-first').value.trim();
+  const last=document.getElementById('pt-last').value.trim().toUpperCase();
+  const email=document.getElementById('pt-email').value.trim();
+  const initials=(first[0]||'')+(last[0]||'');
+  document.getElementById('patient-card').innerHTML=`<div class="patient-card"><div class="patient-avatar">${initials}</div><div><div class="patient-name">${first} ${last}.</div><div class="patient-email">${email}</div></div></div>`;
+  let total=0;
+  const div=document.getElementById('sum-cats');div.innerHTML='';
+  selectedCats.forEach(key=>{
+    const cat=CATS.find(c=>c.key===key);
+    const prods=selections[key]||[];
+    total+=prods.length;
+    const sec=document.createElement('div');sec.className='sum-cat';
+    sec.innerHTML=`<div class="sum-cat-hdr"><span style="font-size:15px">${cat.icon}</span><span style="font-size:13px;font-weight:600;color:var(--text)">${cat.label}</span><span class="badge ${prods.length?'badge-g':''}">${prods.length} selected</span></div>`;
+    if(prods.length){prods.forEach(p=>{const d=document.createElement('div');d.className='sum-prod';d.textContent=p;sec.appendChild(d);});}
+    else{sec.innerHTML+=`<div style="font-size:12px;color:var(--text-3);font-style:italic;padding:3px 0">No products selected</div>`;}
+    div.appendChild(sec);
+  });
+  document.getElementById('chart-note-text').textContent=buildChartNote();
+  const btn=document.getElementById('copy-btn');
+  btn.classList.remove('copied');
+  btn.innerHTML=`<svg width="13" height="13" viewBox="0 0 14 14" fill="none"><rect x="4" y="4" width="9" height="9" rx="1.5" stroke="currentColor" stroke-width="1.4"/><path d="M2 10V2h8" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg> Copy chart note`;
+  document.getElementById('sum-sub').textContent=`${total} product${total!==1?'s':''} for ${first} ${last}.`;
+  document.getElementById('status-box').className='status-box';
+  document.getElementById('status-box').textContent='';
+  show('s-summary');
+}
+
+async function sendRecommendation(){
+  const btn=document.getElementById('send-btn');
+  const status=document.getElementById('status-box');
+  btn.disabled=true;btn.innerHTML=`<span class="spinner"></span>Sending…`;
+  const first=document.getElementById('pt-first').value.trim();
+  const last=document.getElementById('pt-last').value.trim().toUpperCase();
+  const email=document.getElementById('pt-email').value.trim();
+  const hyg=document.getElementById('pt-hyg').value.trim()||'Your Hygienist';
+  const office=document.getElementById('pt-office').value.trim()||'';
+  const recs=[];
+  selectedCats.forEach(key=>{
+    const cat=CATS.find(c=>c.key===key);
+    const prods=(selections[key]||[]).map(name=>{const p=cat.products.find(x=>x.name===name)||{};return{name,brand:p.brand||'',link:p.link||''};});
+    if(prods.length) recs.push({category:cat.label,icon:cat.icon,products:prods});
+  });
+  const payload={patient_name:`${first} ${last}.`,patient_email:email,hygienist:hyg,office_name:office,date:new Date().toLocaleDateString('en-US',{year:'numeric',month:'long',day:'numeric'}),total_products:recs.reduce((a,c)=>a+c.products.length,0),recommendations:recs};
+  try{
+    if(!WEBHOOK_URL||WEBHOOK_URL==='YOUR_ZAPIER_WEBHOOK_URL_HERE') throw new Error('webhook_not_set');
+    await fetch(WEBHOOK_URL,{method:'POST',mode:'no-cors',body:JSON.stringify(payload)});
+    status.className='status-box status-ok';
+    status.textContent=`✓ Recommendation sent to ${email}. They will receive an email with their product links shortly.`;
+    btn.innerHTML='✓ Sent';
+  }catch(err){
+    if(err.message==='webhook_not_set'){status.className='status-box status-err';status.textContent='Webhook not configured yet. Paste your Zapier webhook URL into the WEBHOOK_URL line in this file.';}
+    else{status.className='status-box status-err';status.textContent='Could not send. Check your internet connection and try again.';}
+    btn.disabled=false;btn.innerHTML='Retry — send recommendation email';
+  }
+}
+
+function restart(){
+  selectedCats=[];currentIdx=0;selections={};
+  ['pt-first','pt-last','pt-email','pt-office','pt-hyg'].forEach(id=>document.getElementById(id).value='');
+  document.getElementById('patient-next').disabled=true;
+  document.getElementById('cat-lbl').textContent='0 selected';
+  document.getElementById('begin-btn').disabled=true;
+  document.querySelectorAll('.cat-card').forEach(c=>c.classList.remove('sel'));
+  show('s-patient');
+}
+
+function show(id){document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));document.getElementById(id).classList.add('active');}
+
+function getFallback(){
+  return [
+    {key:'toothbrush',label:'Toothbrush',icon:'🪥',products:[{name:'Sonicare Prestige 9900',brand:'Philips',link:''},{name:'Sonicare Series 5700',brand:'Philips',link:''},{name:'Oral-B iO Series 10',brand:'Oral-B',link:''},{name:'Oral-B iO Series 3',brand:'Oral-B',link:''},{name:'Nimbus Extra-Soft',brand:'Nimbus',link:''},{name:'Cocobrush',brand:'Cocobrush',link:''},{name:'Willo Kids Toothbrush',brand:'Willo',link:''}]},
+    {key:'toothpaste',label:'Toothpaste',icon:'🦷',products:[{name:'Pronamel Daily Protection',brand:'Sensodyne',link:''},{name:'Pronamel Intensive Enamel Repair',brand:'Sensodyne',link:''},{name:'Rapid Relief',brand:'Sensodyne',link:''},{name:'Ela Mint',brand:'Boka',link:''},{name:'3D White Brilliance',brand:'Crest',link:''},{name:'Coco Shine Whitening',brand:'Coco Shine',link:''}]},
+    {key:'floss',label:'Floss',icon:'🧵',products:[{name:'Coco Floss',brand:'Cocofloss',link:''},{name:'Glide Pro-Health Advanced',brand:'Oral-B',link:''},{name:'Superfloss',brand:'Oral-B',link:''},{name:'Slate Electric Flosser',brand:'Slate',link:''},{name:'Proxabrush Interdental Brush',brand:'GUM',link:''}]},
+    {key:'mouthwash',label:'Mouthwash',icon:'🫧',products:[{name:'ACT Anticavity Fluoride Rinse',brand:'ACT',link:''},{name:'Fresh Breath Oral Rinse',brand:'TheraBreath',link:''},{name:'Biotene Dry Mouth Rinse',brand:'Biotene',link:''}]},
+    {key:'whitening',label:'Whitening',icon:'✨',products:[{name:'3D Whitestrips Professional',brand:'Crest',link:''},{name:'Opalescence Go 6%',brand:'Ultradent',link:''}]},
+    {key:'other',label:'Specialty / Other',icon:'➕',products:[{name:'XyliMelts Dry Mouth Discs',brand:'OraCoat',link:''},{name:'Copper Tongue Scraper',brand:'GuruNanda',link:''},{name:'Dental Pod Ultrasonic Cleaner',brand:'Zima Dental',link:''}]},
+  ];
+}
+</script>
+</body>
+</html>
