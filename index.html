@@ -86,6 +86,18 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;b
 .patient-name{font-size:14px;font-weight:500;color:var(--text)}
 .patient-email{font-size:12px;color:var(--text-2);margin-top:1px}
 
+/* ── Consent Section ── */
+.consent-section{border:1.5px solid #F5B731;border-radius:var(--r-sm);padding:1rem;margin-bottom:0.75rem;background:#FFFDF0;cursor:pointer;transition:all 0.15s}
+.consent-section:hover{border-color:#d4a017;background:#FFF9E0}
+.consent-section.consented{border-color:#9FE1CB;background:var(--success-light);cursor:default}
+.consent-row{display:flex;align-items:flex-start;gap:10px}
+.consent-check{width:20px;height:20px;border-radius:5px;border:1.5px solid #d4a017;flex-shrink:0;display:flex;align-items:center;justify-content:center;background:#fff;transition:all 0.12s;margin-top:1px}
+.consent-section.consented .consent-check{background:var(--success);border-color:var(--success)}
+.consent-label{font-size:13px;font-weight:600;color:#92660A;margin-bottom:3px}
+.consent-section.consented .consent-label{color:var(--success)}
+.consent-text{font-size:12px;color:#92660A;line-height:1.5}
+.consent-section.consented .consent-text{color:var(--success)}
+
 /* ── Chart Note Section ── */
 .chart-note-section{border:1px solid var(--border);border-radius:var(--r-sm);padding:1rem;margin-bottom:0.75rem}
 .chart-note-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:0.5rem}
@@ -199,8 +211,27 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;b
     <div id="patient-card"></div>
     <div id="sum-cats"></div>
 
+    <!-- Consent Acknowledgment -->
+    <div class="consent-section" id="consent-section" onclick="toggleConsent()">
+      <div class="consent-row">
+        <div class="consent-check" id="consent-check"></div>
+        <div>
+          <div class="consent-label" id="consent-label">Patient consent required</div>
+          <div class="consent-text" id="consent-text">I verify that this patient approves the use of their email for product recommendations.</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Send Section -->
+    <div class="send-section">
+      <h4>Send recommendation to patient</h4>
+      <p>This will email the patient their personalized product list with links to purchase.</p>
+      <button class="btn btn-p" id="send-btn" onclick="sendRecommendation()" style="width:100%" disabled>Send recommendation email</button>
+      <div class="status-box" id="status-box"></div>
+    </div>
+
     <!-- Chart Note -->
-    <div class="chart-note-section">
+    <div class="chart-note-section" style="margin-top:0.75rem">
       <div class="chart-note-header">
         <h4>📋 Chart note</h4>
         <span>Tap to select · button to copy</span>
@@ -210,13 +241,6 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;b
         <svg width="13" height="13" viewBox="0 0 14 14" fill="none"><rect x="4" y="4" width="9" height="9" rx="1.5" stroke="currentColor" stroke-width="1.4"/><path d="M2 10V2h8" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
         Copy chart note
       </button>
-    </div>
-
-    <div class="send-section">
-      <h4>Send recommendation to patient</h4>
-      <p>This will email the patient their personalized product list with links to purchase. Each link uses your affiliate code.</p>
-      <button class="btn btn-p" id="send-btn" onclick="sendRecommendation()" style="width:100%">Send recommendation email</button>
-      <div class="status-box" id="status-box"></div>
     </div>
   </div>
   <div class="foot">
@@ -338,6 +362,30 @@ function updateSelLbl(key){
 function goNext(){if(currentIdx<selectedCats.length-1){currentIdx++;showProds();}else showSummary();}
 function goBack(){if(currentIdx>0){currentIdx--;showProds();}else show('s-cats');}
 
+function toggleConsent(){
+  const section=document.getElementById('consent-section');
+  const check=document.getElementById('consent-check');
+  const label=document.getElementById('consent-label');
+  const text=document.getElementById('consent-text');
+  const btn=document.getElementById('send-btn');
+  const isNowConsented=!section.classList.contains('consented');
+  if(isNowConsented){
+    section.classList.add('consented');
+    section.onclick=null;
+    check.innerHTML=chk();
+    label.textContent='✓ Consent confirmed';
+    text.textContent='Patient approves the use of their email for product recommendations.';
+    btn.disabled=false;
+  } else {
+    section.classList.remove('consented');
+    section.onclick=toggleConsent;
+    check.innerHTML='';
+    label.textContent='Patient consent required';
+    text.textContent='Tap to confirm the patient has given verbal consent to receive a product recommendation email and follow-up emails from Personalized Dental.';
+    btn.disabled=true;
+  }
+}
+
 function buildChartNote(){
   const first=document.getElementById('pt-first').value.trim();
   const last=document.getElementById('pt-last').value.trim().toUpperCase();
@@ -414,6 +462,15 @@ function showSummary(){
   document.getElementById('sum-sub').textContent=`${total} product${total!==1?'s':''} for ${first} ${last}.`;
   document.getElementById('status-box').className='status-box';
   document.getElementById('status-box').textContent='';
+  // Reset consent state every time summary is shown
+  const section=document.getElementById('consent-section');
+  const check=document.getElementById('consent-check');
+  section.classList.remove('consented');
+  section.onclick=toggleConsent;
+  check.innerHTML='';
+  document.getElementById('consent-label').textContent='Patient consent required';
+  document.getElementById('consent-text').textContent='I verify that this patient approves the use of their email for product recommendations.';
+  document.getElementById('send-btn').disabled=true;
   show('s-summary');
 }
 
