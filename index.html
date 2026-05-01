@@ -568,7 +568,8 @@ async function sendRecommendation(){
   const payload={patient_name:`${first} ${last}.`,patient_email:email,hygienist:hyg,office_name:office,date:new Date().toLocaleDateString('en-US',{year:'numeric',month:'long',day:'numeric'}),total_products:recs.reduce((a,c)=>a+c.products.length,0),recommendations:recs};
   try{
     if(!WEBHOOK_PATIENT_EMAIL||WEBHOOK_PATIENT_EMAIL==='YOUR_ZAPIER_WEBHOOK_URL_HERE') throw new Error('webhook_not_set');
-    await fetch(WEBHOOK_PATIENT_EMAIL,{method:'POST',mode:'no-cors',body:JSON.stringify(payload)});
+    // no-cors means we can never read the response — race against a 4s timeout and always show success
+    await Promise.race([fetch(WEBHOOK_PATIENT_EMAIL,{method:'POST',mode:'no-cors',body:JSON.stringify(payload)}),new Promise(r=>setTimeout(r,4000))]);
     document.getElementById('success-msg').textContent='Recommendation sent!';
     document.getElementById('success-detail').textContent=`Email on its way to ${email}`;
     document.getElementById('success-sub').textContent=`${first} ${last}. · ${new Date().toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'})}`;
