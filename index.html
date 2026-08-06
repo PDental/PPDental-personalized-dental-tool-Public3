@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>SmileWize — Hygienist Tool</title>
+<title>smilewize — Hygienist Tool</title>
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
 body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:#F0F4F8;min-height:100vh;display:flex;align-items:flex-start;justify-content:center;padding:1.5rem 1rem}
@@ -17,14 +17,17 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;b
   --border:#E5E7EB;--border-2:#D1D5DB;
   --r:14px;--r-sm:8px;
 }
-.app{background:#fff;border-radius:var(--r);box-shadow:0 4px 24px rgba(0,0,0,0.08);width:100%;max-width:480px;overflow:hidden;position:relative}
+.app{background:#E9E7E1;border-radius:var(--r);box-shadow:0 4px 24px rgba(0,0,0,0.08);width:100%;max-width:480px;overflow:hidden;position:relative}
 .screen{display:none}.screen.active{display:block}
+#s-landing{padding-bottom:1rem}
 
-.bar{background:var(--brand);padding:1rem 1.25rem;display:flex;align-items:center;gap:10px}
+.bar{background:transparent;padding:1rem 1.25rem;display:flex;align-items:center;gap:10px}
 /* Logo placeholder — replace inner content with <img> when logo is ready */
 .bar-logo-wrap{width:34px;height:34px;flex-shrink:0;display:flex;align-items:center;justify-content:center}
-.bar-title{color:#fff;font-size:15px;font-weight:600}
-.bar-sub{color:rgba(255,255,255,0.6);font-size:11px;margin-top:1px}
+.bar-title{color:#111111;font-size:15px;font-weight:600}
+.bar-sub{color:var(--text-2);font-size:11px;margin-top:1px}
+.app-logo{font-size:26px;font-weight:700}
+.page-subtitle{font-size:16px;font-weight:600;color:#111111;padding:0.125rem 1.25rem 0.625rem}
 
 .slbl{font-size:11px;font-weight:600;color:var(--text-2);letter-spacing:0.07em;text-transform:uppercase;padding:1rem 1.25rem 0.4rem}
 .hint{font-size:13px;color:var(--text-2);padding:0 1.25rem 0.875rem;line-height:1.5}
@@ -33,7 +36,6 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;b
 .field input{width:100%;padding:9px 12px;border:1px solid var(--border-2);border-radius:var(--r-sm);font-size:14px;color:var(--text);background:#fff;transition:border-color 0.15s}
 .field input:focus{outline:none;border-color:var(--brand);box-shadow:0 0 0 3px rgba(27,79,138,0.1)}
 .field-row{display:grid;grid-template-columns:1fr 80px;gap:10px}
-
 
 .cat-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(118px,1fr));gap:8px;padding:0 1.25rem 1rem}
 .cat-card{border:1px solid var(--border);border-radius:var(--r);padding:1rem 0.5rem 0.875rem;cursor:pointer;text-align:center;background:#fff;transition:all 0.15s;user-select:none;position:relative}
@@ -115,9 +117,9 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;b
 
 .qr-section{text-align:center;padding:1.25rem 1rem;margin-bottom:1.25rem;background:var(--bg-2);border:1px solid var(--border);border-radius:var(--r)}
 #qr-canvas-wrap{display:inline-block;background:#fff;padding:12px;border-radius:var(--r-sm);box-shadow:0 2px 10px rgba(0,0,0,0.06);max-width:100%}
-#qr-canvas-wrap canvas,#qr-canvas-wrap img{width:min(220px,60vw)!important;height:min(220px,60vw)!important;display:block}
+#qr-canvas-wrap canvas,#qr-canvas-wrap img{width:min(176px,48vw)!important;height:min(176px,48vw)!important;display:block}
 .qr-caption{font-size:13px;font-weight:600;color:var(--text);margin-top:0.75rem}
-.qr-link{font-size:12px;color:var(--brand);text-decoration:none;word-break:break-all;display:inline-block;margin-top:2px}
+.qr-link{font-size:12px;color:#0FBDA8;text-decoration:none;word-break:break-all;display:inline-block;margin-top:2px}
 .qr-link:hover{text-decoration:underline}
 
 .chart-note-section{border:1px solid var(--border);border-radius:var(--r-sm);padding:1rem;margin-bottom:1rem}
@@ -137,8 +139,8 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;b
 
 /* Feedback pill on screen 0 */
 .feedback-pill-wrap{display:flex;align-items:center;justify-content:center;padding:0.375rem 1.25rem 1rem}
-.feedback-pill{display:inline-flex;align-items:center;gap:5px;background:var(--brand-light);border:1px solid #BFDBF7;border-radius:20px;padding:6px 16px;font-size:12px;font-weight:600;color:var(--brand-dark);cursor:pointer;transition:all 0.15s}
-.feedback-pill:hover{background:#D0E9F9;border-color:var(--brand)}
+.feedback-pill{display:inline-flex;align-items:center;gap:5px;background:rgba(255,251,234,0.5);border:1px solid var(--consent-border);border-radius:19px;padding:4.75px 13px;font-size:10.5px;font-weight:500;color:var(--consent-text);cursor:pointer;transition:all 0.15s}
+.feedback-pill:hover{background:rgba(255,243,196,0.65);border-color:var(--consent-border)}
 
 /* Feedback modal */
 .modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.45);display:flex;align-items:center;justify-content:center;padding:1rem;z-index:100;opacity:0;pointer-events:none;transition:opacity 0.2s}
@@ -171,44 +173,32 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;b
 <body>
 <div class="app">
 
-<!-- ══ SCREEN 0: PATIENT INFO ══ -->
-<div id="s-patient" class="screen active">
-  <div class="bar">
+<!-- ══ SCREEN 0: LANDING / PROVIDER ══ -->
+<div id="s-landing" class="screen active">
+  <div class="bar" style="background:transparent;padding-bottom:0.5rem">
     <!-- LOGO: replace this div's contents with <img src="logo.png" height="34"> when ready -->
     <div class="bar-logo-wrap" id="logo-placeholder"></div>
-    <div><div class="bar-title">SmileWize</div><div class="bar-sub">Step 1 of 3 — Patient Information</div></div>
+    <div><div class="bar-title" style="font-size:36px;font-weight:700"><span style="color:#111111">smile</span><span style="color:#0FBDA8">wize</span></div><div class="bar-sub" style="font-size:16px;color:#4B5563">personalized products from providers who care</div></div>
   </div>
-  <div class="slbl">Patient Details</div>
-  <div class="hint">Enter the patient's information before selecting products. This is used to send their personalized recommendation.</div>
-  <div class="field-group">
-    <div class="field-row">
+
+  <div id="provider-form" style="padding:1rem 1.25rem 0">
+    <div class="field-group" style="padding:0">
       <div class="field">
-        <label>Patient First Name</label>
-        <input id="pt-first" type="text" placeholder="e.g. Mariah" autocomplete="off" oninput="validatePatient()"/>
+        <label>Provider <span style="color:#0FBDA8">*</span></label>
+        <input id="pt-hyg" type="text" placeholder="your name" autocomplete="off" oninput="validateProvider()"/>
       </div>
       <div class="field">
-        <label>Last Initial</label>
-        <input id="pt-last" type="text" placeholder="e.g. K" maxlength="1" autocomplete="off" oninput="validatePatient()"/>
+        <label>Office</label>
+        <input id="pt-office" type="text" placeholder="your dental office" autocomplete="off" oninput="validateProvider()"/>
       </div>
     </div>
-    <div class="field">
-      <label>Patient Email Address</label>
-      <input id="pt-email" type="email" placeholder="patient@email.com" autocomplete="off" oninput="validatePatient()"/>
-    </div>
-    <div class="field">
-      <label>Office Name</label>
-      <input id="pt-office" type="text" placeholder="e.g. Top Notch Dental" autocomplete="off"/>
-    </div>
-    <div class="field">
-      <label>Hygienist Name</label>
-      <input id="pt-hyg" type="text" placeholder="Your Name" autocomplete="off" oninput="validatePatient()"/>
-    </div>
   </div>
-  <div class="foot">
-    <div class="ml"><button class="btn btn-p" id="patient-next" disabled onclick="goToCats()">Select Products →</button></div>
+
+  <div class="foot" style="background:transparent;border-top:none">
+    <div class="ml"><button class="btn btn-p" id="landing-next" disabled onclick="goToCats()">Start Recommendation →</button></div>
   </div>
   <div class="feedback-pill-wrap">
-    <span class="feedback-pill" onclick="openFeedback('landing')">💬 Got feedback, ideas, or a bug? Let us know</span>
+    <span class="feedback-pill" onclick="openFeedback('landing')">💬 Got feedback, ideas, or spot a bug? Let us know!</span>
   </div>
 </div>
 
@@ -216,17 +206,15 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;b
 <div id="s-cats" class="screen">
   <div class="bar">
     <div class="bar-logo-wrap"></div>
-    <div><div class="bar-title">SmileWize</div><div class="bar-sub">Step 2 of 3 — Select Categories</div></div>
+    <div><div class="bar-title app-logo"><span style="color:#111111">smile</span><span style="color:#0FBDA8">wize</span></div><div class="bar-sub">Step 1 of 3 — Select Categories</div></div>
   </div>
   <div id="load-state" class="loading"><div class="load-spin"></div><p>Loading products…</p></div>
   <div id="cats-body" style="display:none">
-    <div class="slbl">Applicable Categories</div>
-    <div class="hint">Tap every category that applies to this patient.</div>
-    <div class="cat-grid" id="cat-grid"></div>
+    <div class="cat-grid" id="cat-grid" style="margin-top:1rem"></div>
   </div>
   <div class="foot">
     <span class="flbl" id="cat-lbl">0 selected</span>
-    <div class="ml"><button class="btn btn-p" id="begin-btn" disabled onclick="beginFlow()">Begin →</button></div>
+    <div class="ml"><button class="btn btn-p" id="begin-btn" disabled onclick="beginFlow()">Next →</button></div>
   </div>
 </div>
 
@@ -234,8 +222,9 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;b
 <div id="s-prods" class="screen">
   <div class="bar">
     <div class="bar-logo-wrap"></div>
-    <div><div class="bar-title" id="prod-cat-label"></div><div class="bar-sub">Step 3 of 3 — Select Products</div></div>
+    <div><div class="bar-title app-logo"><span style="color:#111111">smile</span><span style="color:#0FBDA8">wize</span></div><div class="bar-sub">Step 2 of 3 — Select Products</div></div>
   </div>
+  <div class="page-subtitle" id="prod-cat-label"></div>
   <div class="prog-wrap">
     <div class="prog-track"><div class="prog-fill" id="prog-fill"></div></div>
     <span class="prog-txt" id="prog-txt"></span>
@@ -252,13 +241,19 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;b
 <div id="s-summary" class="screen">
   <div class="bar">
     <div class="bar-logo-wrap"></div>
-    <div><div class="bar-title">Review &amp; Send</div><div class="bar-sub" id="sum-sub"></div></div>
+    <div><div class="bar-title app-logo"><span style="color:#111111">smile</span><span style="color:#0FBDA8">wize</span></div><div class="bar-sub" id="sum-sub">Step 3 of 3</div></div>
   </div>
+  <div class="page-subtitle">Review &amp; Send</div>
   <div class="sum-body">
-    <div id="patient-card"></div>
     <div id="prod-summary-card"></div>
 
-    <div class="consent-box" onclick="toggleConsent(event)">
+    <div style="display:flex;flex-direction:column;gap:10px;margin-bottom:0.375rem">
+      <div class="field"><label>Patient First Name</label><input id="pt-first" type="text" placeholder="e.g. Mariah" autocomplete="off" oninput="updateSendState()"/></div>
+      <div class="field"><label>Patient Email Address</label><input id="pt-email" type="email" placeholder="patient@email.com" autocomplete="off" oninput="updateSendState()"/></div>
+    </div>
+    <div id="patient-hint" style="font-size:12px;color:var(--text-3);line-height:1.5;margin-bottom:1.125rem;display:none"></div>
+
+    <div class="consent-box" id="consent-box" onclick="toggleConsent(event)">
       <div class="consent-chk-wrap">
         <input type="checkbox" id="consent-chk" onclick="event.stopPropagation();toggleConsent(event)"/>
       </div>
@@ -269,9 +264,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;b
     </div>
 
     <div class="send-section">
-      <h4>Send Recommendation To Patient</h4>
-      <p>This will email the patient their personalized product list with links to purchase.</p>
-      <button class="btn btn-p" id="send-btn" onclick="sendRecommendation()" style="width:100%" disabled>Send Recommendation Email</button>
+      <button class="btn btn-p" id="send-btn" onclick="sendRecommendation()" style="width:100%" disabled>Share Recommendation</button>
       <div class="status-box" id="status-box"></div>
     </div>
   </div>
@@ -285,7 +278,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;b
 <div id="s-success" class="screen">
   <div class="bar">
     <div class="bar-logo-wrap"></div>
-    <div><div class="bar-title">SmileWize</div><div class="bar-sub" id="success-sub"></div></div>
+    <div><div class="bar-title app-logo"><span style="color:#111111">smile</span><span style="color:#0FBDA8">wize</span></div><div class="bar-sub" id="success-sub"></div></div>
   </div>
   <div class="success-body">
     <div class="success-heading">Great Job! 🎉</div>
@@ -346,7 +339,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;b
     <div id="fb-thankyou-state" class="modal-thankyou" style="display:none">
       <div class="ty-emoji">🙏</div>
       <h3>Thank you!</h3>
-      <p id="fb-ty-msg">Your feedback helps make SmileWize better for every hygienist and patient.</p>
+      <p id="fb-ty-msg">Your feedback helps make smilewize better for every hygienist and patient.</p>
       <div class="ty-email-note" id="fb-ty-email-note"></div>
       <button class="btn btn-p btn-sm" onclick="closeFeedback()">Close</button>
     </div>
@@ -416,18 +409,27 @@ async function loadCatalog(){
   buildCatGrid();
 }
 
-function validatePatient(){
-  const first=document.getElementById('pt-first').value.trim();
-  const last=document.getElementById('pt-last').value.trim();
-  const email=document.getElementById('pt-email').value.trim();
+function validateProvider(){
   const hyg=document.getElementById('pt-hyg').value.trim();
-  document.getElementById('patient-next').disabled=!(first&&last&&/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)&&hyg);
+  document.getElementById('landing-next').disabled=!hyg;
 }
 
-function goToCats(){
-  interactionId=crypto.randomUUID();
-  show('s-cats');if(CATS.length===0) loadCatalog();
+function loadProviderInfo(){
+  try{
+    document.getElementById('pt-hyg').value=localStorage.getItem('sw_hyg')||'';
+    document.getElementById('pt-office').value=localStorage.getItem('sw_office')||'';
+  }catch(e){}
+  validateProvider();
 }
+
+function saveProviderInfo(){
+  try{
+    localStorage.setItem('sw_hyg',document.getElementById('pt-hyg').value.trim());
+    localStorage.setItem('sw_office',document.getElementById('pt-office').value.trim());
+  }catch(e){}
+}
+
+function goToCats(){saveProviderInfo();interactionId=crypto.randomUUID();show('s-cats');if(CATS.length===0) loadCatalog();}
 
 function buildCatGrid(){
   const g=document.getElementById('cat-grid');g.innerHTML='';
@@ -499,19 +501,37 @@ function toggleConsent(e){
     chk.checked=!chk.checked;
     consentGiven=chk.checked;
   }
-  document.getElementById('send-btn').disabled=!consentGiven;
+  updateSendState();
+}
+
+function updateSendState(){
+  const first=document.getElementById('pt-first').value.trim();
+  const email=document.getElementById('pt-email').value.trim();
+  const emailValid=email===''||/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+  const nameOk=email===''?true:!!first;
+  const consentBox=document.getElementById('consent-box');
+  const hint=document.getElementById('patient-hint');
+  const sendBtn=document.getElementById('send-btn');
+  sendBtn.textContent='Share Recommendation';
+  if(!email){
+    consentBox.style.display='none';
+    consentGiven=true;
+    hint.style.display='none';
+    sendBtn.disabled=false;
+  } else if(emailValid&&nameOk){
+    consentBox.style.display='flex';
+    hint.style.display='none';
+    sendBtn.disabled=!consentGiven;
+  } else {
+    consentBox.style.display='none';
+    consentGiven=false;
+    hint.style.display='block';
+    hint.textContent=!emailValid?"Enter a valid patient email, or clear the field to share anonymously.":"Add the patient's first name to share by email, or clear the email to share anonymously.";
+    sendBtn.disabled=true;
+  }
 }
 
 function showSummary(){
-  const first=document.getElementById('pt-first').value.trim();
-  const last=document.getElementById('pt-last').value.trim().toUpperCase();
-  const email=document.getElementById('pt-email').value.trim();
-  const initials=(first[0]||'')+(last[0]||'');
-  document.getElementById('patient-card').innerHTML=`
-    <div class="patient-card">
-      <div class="patient-avatar">${initials}</div>
-      <div><div class="patient-name">${first} ${last}.</div><div class="patient-email">${email}</div></div>
-    </div>`;
   let total=0,rows='';
   selectedCats.forEach(key=>{
     const cat=CATS.find(c=>c.key===key);
@@ -525,17 +545,17 @@ function showSummary(){
     <div class="prod-summary-card"><h4>${total} product${total!==1?'s':''} selected</h4>${rows}</div>`;
   consentGiven=false;
   document.getElementById('consent-chk').checked=false;
-  document.getElementById('send-btn').disabled=true;
-  document.getElementById('sum-sub').textContent=`${total} product${total!==1?'s':''} for ${first} ${last}.`;
+  document.getElementById('sum-sub').textContent=`Step 3 of 3 · ${total} product${total!==1?'s':''} selected`;
   document.getElementById('status-box').className='status-box';
   document.getElementById('status-box').textContent='';
+  updateSendState();
   show('s-summary');
 }
 
 function renderCartQR(url){
   const wrap=document.getElementById('qr-canvas-wrap');
   wrap.innerHTML='';
-  QRCode.toCanvas(url,{width:220,margin:1,errorCorrectionLevel:'M',color:{dark:'#1a1a1a',light:'#ffffff'}},(err,canvas)=>{
+  QRCode.toCanvas(url,{width:176,margin:1,errorCorrectionLevel:'M',color:{dark:'#1a1a1a',light:'#ffffff'}},(err,canvas)=>{
     if(err){wrap.innerHTML='<p style="font-size:12px;color:var(--text-2);padding:1rem">QR code unavailable — use the link below.</p>';return;}
     wrap.appendChild(canvas);
   });
@@ -545,21 +565,20 @@ function renderCartQR(url){
 
 function buildChartNote(){
   const first=document.getElementById('pt-first').value.trim();
-  const last=document.getElementById('pt-last').value.trim().toUpperCase();
   const hyg=document.getElementById('pt-hyg').value.trim();
-  const office=document.getElementById('pt-office').value.trim();
+  const office=document.getElementById('pt-office').value.trim()||'your dental office';
   const date=new Date().toLocaleDateString('en-US',{year:'numeric',month:'long',day:'numeric'});
-  const lines=['Chart Note — SmileWize',`Date: ${date}`];
-  if(office) lines.push(`Office: ${office}`);
+  const lines=['Chart Note — smilewize',`Date: ${date}`];
+  lines.push(`Office: ${office}`);
   if(hyg) lines.push(`Provider: ${hyg}`);
-  lines.push(`Patient: ${first} ${last}.`,'','Products discussed and recommended at today\'s visit:');
+  lines.push(first?`Patient: ${first}`:'Patient: (anonymous — not captured)','','Products discussed and recommended at today\'s visit:');
   selectedCats.forEach(key=>{
     const cat=CATS.find(c=>c.key===key);
     const prods=selections[key]||[];if(!prods.length) return;
     lines.push('',`${cat.label}:`);
     prods.forEach(name=>{const p=cat.products.find(x=>x.name===name)||{};lines.push(`  - ${name}${p.brand?' ('+p.brand+')':''}`);});
   });
-  lines.push('','Patient emailed personalized product recommendations via SmileWize.');
+  lines.push('','Patient emailed personalized product recommendations via smilewize.');
   return lines.join('\n');
 }
 
@@ -594,12 +613,17 @@ async function sendRecommendation(){
   if(!consentGiven) return;
   const btn=document.getElementById('send-btn');
   const status=document.getElementById('status-box');
-  btn.disabled=true;btn.innerHTML=`<span class="spinner"></span>Sending…`;
   const first=document.getElementById('pt-first').value.trim();
-  const last=document.getElementById('pt-last').value.trim().toUpperCase();
-  const email=document.getElementById('pt-email').value.trim();
+  let email=document.getElementById('pt-email').value.trim();
   const hyg=document.getElementById('pt-hyg').value.trim();
-  const office=document.getElementById('pt-office').value.trim()||'';
+  const office=document.getElementById('pt-office').value.trim()||'your dental office';
+  const isAnonymous=!email;
+  btn.disabled=true;btn.innerHTML=`<span class="spinner"></span>Sharing…`;
+  if(isAnonymous){
+    // no patient email captured — tag a trackable internal address so the referral still logs, but no email is actually delivered (Zap should filter these before the Gmail step)
+    email=`anonymous+${Date.now()}@smilewize.com`;
+  }
+  const patientLabel=first||'Anonymous';
   const recs=[];
   const allProductIds=[];
   const flatProducts=[];
@@ -620,14 +644,14 @@ async function sendRecommendation(){
     flatFields[`product_${i+1}_id`]=flatProducts[i]?flatProducts[i].id:'';
   }
   flatFields.additional_products=flatProducts.slice(5).map(p=>`${p.name} (${p.id})`).join(', ');
-  const payload={interaction_id:interactionId,cart_url:cartUrl,product_ids:allProductIds,...flatFields,patient_name:`${first} ${last}.`,patient_email:email,hygienist:hyg,office_name:office,date:new Date().toLocaleDateString('en-US',{year:'numeric',month:'long',day:'numeric'}),total_products:recs.reduce((a,c)=>a+c.products.length,0),recommendations:recs};
+  const payload={interaction_id:interactionId,cart_url:cartUrl,product_ids:allProductIds,...flatFields,patient_name:patientLabel,patient_email:email,is_anonymous:isAnonymous,hygienist:hyg,office_name:office,date:new Date().toLocaleDateString('en-US',{year:'numeric',month:'long',day:'numeric'}),total_products:recs.reduce((a,c)=>a+c.products.length,0),recommendations:recs};
   try{
     if(!WEBHOOK_PATIENT_EMAIL||WEBHOOK_PATIENT_EMAIL==='YOUR_ZAPIER_WEBHOOK_URL_HERE') throw new Error('webhook_not_set');
     // no-cors means we can never read the response — race against a 4s timeout and always show success
     await Promise.race([fetch(WEBHOOK_PATIENT_EMAIL,{method:'POST',mode:'no-cors',body:JSON.stringify(payload)}),new Promise(r=>setTimeout(r,4000))]);
-    document.getElementById('success-msg').textContent='Recommendation sent!';
-    document.getElementById('success-detail').textContent=`Email on its way to ${email}`;
-    document.getElementById('success-sub').textContent=`${first} ${last}. · ${new Date().toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'})}`;
+    document.getElementById('success-msg').textContent='Recommendation shared!';
+    document.getElementById('success-detail').textContent=isAnonymous?'No patient email was captured — logged for your records.':`Email on its way to ${email}`;
+    document.getElementById('success-sub').textContent=`${patientLabel} · ${new Date().toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'})}`;
     document.getElementById('chart-note-text').textContent=buildChartNote();
     const cpbtn=document.getElementById('copy-btn');cpbtn.classList.remove('copied');
     cpbtn.innerHTML=`<svg width="13" height="13" viewBox="0 0 14 14" fill="none"><rect x="4" y="4" width="9" height="9" rx="1.5" stroke="currentColor" stroke-width="1.4"/><path d="M2 10V2h8" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg> Copy chart note`;
@@ -635,8 +659,8 @@ async function sendRecommendation(){
     show('s-success');launchConfetti();
   }catch(err){
     status.className='status-box status-err';
-    status.textContent=err.message==='webhook_not_set'?'Webhook not configured. Paste your Zapier webhook URL into the WEBHOOK_PATIENT_EMAIL line in this file.':'Could not send. Check your internet connection and try again.';
-    btn.disabled=false;btn.innerHTML='Retry — Send Recommendation Email';
+    status.textContent=err.message==='webhook_not_set'?'Webhook not configured. Paste your Zapier webhook URL into the WEBHOOK_PATIENT_EMAIL line in this file.':'Could not share. Check your internet connection and try again.';
+    btn.disabled=false;btn.innerHTML='Retry — Share Recommendation';
   }
 }
 
@@ -679,11 +703,11 @@ async function submitFeedback(){
   document.getElementById('fb-form-state').style.display='none';
   const tyNote=document.getElementById('fb-ty-email-note');
   if(replyEmail){
-    document.getElementById('fb-ty-msg').textContent='Your feedback helps make SmileWize better for every hygienist and patient.';
+    document.getElementById('fb-ty-msg').textContent='Your feedback helps make smilewize better for every hygienist and patient.';
     tyNote.textContent=`We'll follow up at ${replyEmail} from support@smilewize.com`;
     tyNote.style.display='block';
   } else {
-    document.getElementById('fb-ty-msg').textContent='Thank you for your input! Every submission helps us improve SmileWize.';
+    document.getElementById('fb-ty-msg').textContent='Thank you for your input! Every submission helps us improve smilewize.';
     tyNote.style.display='none';
   }
   document.getElementById('fb-thankyou-state').style.display='block';
@@ -691,15 +715,17 @@ async function submitFeedback(){
 
 function restart(){
   selectedCats=[];currentIdx=0;selections={};consentGiven=false;interactionId='';
-  ['pt-first','pt-last','pt-email','pt-office','pt-hyg'].forEach(id=>document.getElementById(id).value='');
-  document.getElementById('patient-next').disabled=true;
+  ['pt-first','pt-email'].forEach(id=>document.getElementById(id).value='');
   document.getElementById('cat-lbl').textContent='0 selected';
   document.getElementById('begin-btn').disabled=true;
   document.querySelectorAll('.cat-card').forEach(c=>c.classList.remove('sel'));
-  show('s-patient');
+  validateProvider();
+  show('s-landing');
 }
 
 function show(id){document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));document.getElementById(id).classList.add('active');}
+
+loadProviderInfo();
 
 function getFallback(){return [{key:'toothbrush',label:'Toothbrush',icon:'🪥',products:[{name:'Sonicare Prestige 9900',brand:'Philips',link:''},{name:'Sonicare Series 5700',brand:'Philips',link:''},{name:'Oral-B iO Series 10',brand:'Oral-B',link:''},{name:'Oral-B iO Series 3',brand:'Oral-B',link:''},{name:'Nimbus Extra-Soft',brand:'Nimbus',link:''},{name:'Cocobrush',brand:'Cocobrush',link:''},{name:'Willo Kids Toothbrush',brand:'Willo',link:''}]},{key:'toothpaste',label:'Toothpaste',icon:'🦷',products:[{name:'Pronamel Daily Protection',brand:'Sensodyne',link:''},{name:'Pronamel Intensive Enamel Repair',brand:'Sensodyne',link:''},{name:'Rapid Relief',brand:'Sensodyne',link:''},{name:'Ela Mint',brand:'Boka',link:''},{name:'3D White Brilliance',brand:'Crest',link:''},{name:'Coco Shine Whitening',brand:'Coco Shine',link:''}]},{key:'floss',label:'Floss',icon:'🧵',products:[{name:'Coco Floss',brand:'Cocofloss',link:''},{name:'Glide Pro-Health Advanced',brand:'Oral-B',link:''},{name:'Superfloss',brand:'Oral-B',link:''},{name:'Slate Electric Flosser',brand:'Slate',link:''},{name:'Proxabrush Interdental Brush',brand:'GUM',link:''}]},{key:'mouthwash',label:'Mouthwash',icon:'🫧',products:[{name:'ACT Anticavity Fluoride Rinse',brand:'ACT',link:''},{name:'Fresh Breath Oral Rinse',brand:'TheraBreath',link:''},{name:'Biotene Dry Mouth Rinse',brand:'Biotene',link:''}]},{key:'whitening',label:'Whitening',icon:'✨',products:[{name:'3D Whitestrips Professional',brand:'Crest',link:''},{name:'Opalescence Go 6%',brand:'Ultradent',link:''}]},{key:'specialityother',label:'Specialty',icon:'🪄',products:[{name:'XyliMelts Dry Mouth Discs',brand:'OraCoat',link:''},{name:'Copper Tongue Scraper',brand:'GuruNanda',link:''},{name:'Dental Pod Ultrasonic Cleaner',brand:'Zima Dental',link:''}]}];}
 </script>
