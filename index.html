@@ -394,8 +394,10 @@ function splitCSVLine(line){
 
 function parseCSV(text){
   const lines=text.trim().split('\n');
-  if(lines.length<2) return {};
-  const header=splitCSVLine(lines[0]).map(h=>h.trim().toLowerCase());
+  if(lines.length<3) return {};
+  // Row 1 is Josh's RULES banner; row 2 (index 1) is always the real header row.
+  const headerRow=1;
+  const header=splitCSVLine(lines[headerRow]).map(h=>h.trim().toLowerCase());
   const findCol=(...names)=>{for(const n of names){const i=header.indexOf(n);if(i!==-1) return i;}return -1;};
   const idIdx=findCol('product id','id');
   const nameIdx=findCol('product name','name');
@@ -405,7 +407,7 @@ function parseCSV(text){
   const tagsIdx=findCol('tags');
   const linkIdx=findCol('affiliate link','link','purchase link','buy link','url');
   const catMap={};
-  lines.slice(1).forEach(line=>{
+  lines.slice(headerRow+1).forEach(line=>{
     const cols=splitCSVLine(line);
     const id=(idIdx>-1?cols[idIdx]:cols[0])||'';
     const name=(nameIdx>-1?cols[nameIdx]:cols[1])||'';
