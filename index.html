@@ -442,7 +442,7 @@ const ICON_SVG = {
   'Specialty / Other':'<svg viewBox="0 0 22 22" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M9 3h4M9.5 3v5.5L5.7 16a2 2 0 0 0 1.8 2.9h6.9a2 2 0 0 0 1.8-2.9L12.5 8.5V3"/><path d="M7.5 13.5h7"/></svg>'
 };
 
-let CATS=[], ALLPRODUCTS=[], PRODUCTS_BY_ID={}, cart={}, currentList=null;
+let CATS=[], ALLPRODUCTS=[], PRODUCTS_BY_ID={}, cart={}, currentList=null, recentSnapshot=null;
 let feedbackSource='', consentGiven=false, interactionId='';
 
 function chk(){return '<svg width="12" height="9" viewBox="0 0 12 9" fill="none"><path d="M1 4.5L4.5 8L11 1" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>';}
@@ -764,8 +764,14 @@ function renderHubList(items,showCategory,key){
 
 function openHubList(key){
   currentList=key;
+  // Freeze the order right when the list opens. "Recently Selected" is the
+  // only list whose underlying order changes as a side effect of selecting
+  // something in it — without this, tapping an item would immediately jump
+  // it to the top mid-selection, which is jarring. The live, correctly
+  // re-ordered list still applies the next time this is opened fresh.
+  if(key==='recent') recentSnapshot = getListItems('recent');
   const showCat=key==='search'||key.indexOf('tag:')===0;
-  renderHubList(getListItems(key), showCat, key);
+  renderHubList(key==='recent' ? recentSnapshot : getListItems(key), showCat, key);
   document.getElementById('search-dropdown').style.display='none';
   document.getElementById('hub-grid-view').style.display='none';
   document.getElementById('hub-list-view').style.display='block';
@@ -776,6 +782,7 @@ function openHubList(key){
 
 function hubBack(){
   currentList=null;
+  recentSnapshot=null;
   document.getElementById('hub-list-view').style.display='none';
   document.getElementById('hub-grid-view').style.display='block';
   document.getElementById('hub-scroll').scrollTop=0;
@@ -811,7 +818,10 @@ function toggleCartItem(id){
   if(cart[id]) delete cart[id];
   else {cart[id]=p;addRecent(id);}
   syncCart();
-  if(currentList) renderHubList(getListItems(currentList), currentList==='search'||currentList.indexOf('tag:')===0, currentList);
+  if(currentList){
+    const items = currentList==='recent' ? recentSnapshot : getListItems(currentList);
+    renderHubList(items, currentList==='search'||currentList.indexOf('tag:')===0, currentList);
+  }
 }
 
 // Keeps the growing cart-chip strip, the count label, and the Share button's
@@ -1037,7 +1047,7 @@ async function submitFeedback(){
 }
 
 function restart(){
-  cart={};currentList=null;interactionId='';consentGiven=false;
+  cart={};currentList=null;recentSnapshot=null;interactionId='';consentGiven=false;
   ['pt-first','pt-email'].forEach(id=>document.getElementById(id).value='');
   const hubSearch=document.getElementById('hub-search');
   if(hubSearch) hubSearch.value='';
