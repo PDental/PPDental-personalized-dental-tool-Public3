@@ -1,5 +1,4 @@
 <!-- SAVED AS-IS FROM JOSH'S PASTE ON 2026-08-23. This is the confirmed live, current version of the SmileWize hygienist tool (teal Hub-flow redesign), sitting on the test/side GitHub Pages branch as of this date. The version in the Claude Project files (/mnt/project/index.html) is stale/pre-redesign as of this date — do not trust it over this file or a fresh paste from Josh. -->
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -8,6 +7,7 @@
 <title>smilewize — Hygienist Tool</title>
 <link rel="manifest" href="manifest.json">
 <meta name="theme-color" content="#0FBDA8">
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
 <link rel="icon" href="favicon-32.png" sizes="32x32">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <meta name="apple-mobile-web-app-capable" content="yes">
@@ -131,6 +131,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;b
 .success-heading{font-size:30px;font-weight:700;color:#000000;text-align:center;margin-bottom:1rem;letter-spacing:-0.5px}
 .success-banner{background:var(--success-light);border:1px solid #9FE1CB;border-radius:var(--r-sm);padding:1rem;text-align:center;margin-bottom:1.25rem}
 .success-banner p{font-size:13px;color:var(--success);font-weight:600}
+#success-msg{font-size:17px}
 .success-banner span{font-size:12px;color:var(--success);opacity:0.8}
 
 .qr-section{text-align:center;padding:1.25rem 1rem;margin-bottom:1.25rem;background:var(--bg-2);border:1px solid var(--border);border-radius:var(--r)}
@@ -153,13 +154,13 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;b
 .feedback-banner p{font-size:17.5px;font-weight:600;color:var(--consent-text)}
 .feedback-banner span{font-size:13px;color:var(--consent-text);opacity:0.85;display:block;margin-top:1px}
 
-.feedback-pill-wrap{display:flex;align-items:center;justify-content:center;padding:0.375rem 1.25rem 1rem;flex-shrink:0}
+.feedback-pill-wrap{display:flex;align-items:center;justify-content:center;padding:0.375rem 1.25rem calc(1.5rem + env(safe-area-inset-bottom));flex-shrink:0}
 .feedback-pill{display:inline-flex;align-items:center;gap:5px;background:rgba(255,251,234,0.5);border:1px solid var(--consent-border);border-radius:19px;padding:4.75px 13px;font-size:10.5px;font-weight:500;color:var(--consent-text);cursor:pointer;transition:all 0.15s}
 .feedback-pill:hover{background:rgba(255,243,196,0.65);border-color:var(--consent-border)}
 
 .field-req label{color:var(--text);font-weight:600}
 .stat-eyebrow{font-size:11px;color:var(--text);text-transform:uppercase;letter-spacing:0.06em}
-.quiet-link{font-size:12px;color:var(--text-2);text-decoration:underline;cursor:pointer;background:none;border:none;font-family:inherit;padding:0}
+.quiet-link{font-size:16px;color:var(--text-2);text-decoration:underline;cursor:pointer;background:none;border:none;font-family:inherit;padding:0}
 .quiet-link:hover{color:var(--text)}
 
 .modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.45);display:flex;align-items:center;justify-content:center;padding:1rem;z-index:100;opacity:0;pointer-events:none;transition:opacity 0.2s}
@@ -193,7 +194,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;b
 
 <!-- ══ SCREEN 0: LANDING / PROVIDER ══ -->
 <div id="s-landing" class="screen active">
-  <div class="bar" style="flex-shrink:0;padding-bottom:1rem">
+  <div class="bar" style="flex-shrink:0;padding-bottom:1.5rem">
     <div class="bar-logo-wrap" id="logo-placeholder"></div>
     <div><div class="bar-title" style="font-size:36px;font-weight:700"><span style="color:#111111">smile</span><span style="color:#0FBDA8">wize</span></div><div class="bar-sub" style="font-size:16px;color:#4B5563">personalized products from providers who care</div></div>
   </div>
@@ -204,7 +205,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;b
   <div style="flex:1;min-height:0;overflow-y:auto">
     <div style="min-height:100%;display:flex;flex-direction:column">
 
-      <div id="provider-form" class="field-req" style="flex-shrink:0;padding:1rem 1.25rem 0">
+      <div id="provider-form" class="field-req" style="flex-shrink:0;padding:1.75rem 1.25rem 0">
         <div class="field-group" style="padding:0">
           <div class="field">
             <label>Provider <span style="color:#0FBDA8">*</span></label>
@@ -237,7 +238,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;b
       <div style="flex-shrink:0">
         <div style="text-align:center;padding:0.5rem 1.25rem 0">
           <button class="quiet-link" onclick="shareApp()">Share this tool</button>
-          <span style="font-size:12px;color:var(--text-3);margin:0 6px">&middot;</span>
+          <span style="font-size:13px;color:var(--text-3);margin:0 4px">&middot;</span>
           <button class="quiet-link" onclick="openGetApp()">Get the app</button>
         </div>
         <div class="feedback-pill-wrap">
@@ -537,10 +538,31 @@ async function fetchStatsCSV(url){
   return lines.slice(1).map(splitCSVLine);
 }
 
+// Merges rows that differ only by capitalization (e.g. "Angela" and "angela")
+// so they count as one person/office instead of splitting the score. Whichever
+// capitalization has the single highest count becomes the display version.
+// Also silently drops any row where a key part is literally "test" (any
+// capitalization) so internal testing never shows up on a real leaderboard.
+function mergeStatsRows(rows, keyIdxs, countIdx){
+  const map = new Map();
+  rows.forEach(r=>{
+    const parts = keyIdxs.map(i=>(r[i]||'').trim());
+    if(!parts.every(p=>p)) return;
+    if(parts.some(p=>p.toLowerCase()==='test')) return;
+    const key = parts.map(p=>p.toLowerCase()).join('|');
+    const count = parseInt(r[countIdx],10)||0;
+    if(!map.has(key)) map.set(key, {parts, count:0, bestCount:-1});
+    const entry = map.get(key);
+    entry.count += count;
+    if(count > entry.bestCount){ entry.bestCount = count; entry.parts = parts; }
+  });
+  return Array.from(map.values()).map(e=>({parts:e.parts, count:e.count}));
+}
+
 async function renderLandingStats(){
   const block = document.getElementById('landing-stats');
   const office = (localStorage.getItem('sw_office')||'').trim();
-  if(!office){ block.style.display='none'; return; }
+  if(!office || office.toLowerCase()==='test'){ block.style.display='none'; return; }
 
   try{
     const [providerRows, officeRows] = await Promise.all([
@@ -548,17 +570,16 @@ async function renderLandingStats(){
       fetchStatsCSV(OFFICE_STATS_URL)
     ]);
 
-    const officeSorted = officeRows
-      .map(r=>({name:(r[0]||'').trim(), count:parseInt(r[1],10)||0}))
-      .filter(r=>r.name)
+    const officeSorted = mergeStatsRows(officeRows, [0], 1)
+      .map(e=>({name:e.parts[0], count:e.count}))
       .sort((a,b)=>b.count-a.count);
-    const rankIdx = officeSorted.findIndex(r=>r.name===office);
+    const rankIdx = officeSorted.findIndex(r=>r.name.toLowerCase()===office.toLowerCase());
     // Office hasn't logged a recommendation yet this month — nothing to show.
     if(rankIdx===-1){ block.style.display='none'; return; }
 
-    const providerSorted = providerRows
-      .map(r=>({name:(r[0]||'').trim(), office:(r[1]||'').trim(), count:parseInt(r[2],10)||0}))
-      .filter(r=>r.name && r.office===office)
+    const providerSorted = mergeStatsRows(providerRows, [0,1], 2)
+      .map(e=>({name:e.parts[0], office:e.parts[1], count:e.count}))
+      .filter(r=>r.office.toLowerCase()===office.toLowerCase())
       .sort((a,b)=>b.count-a.count)
       .slice(0,3);
     if(!providerSorted.length){ block.style.display='none'; return; }
@@ -642,8 +663,10 @@ function closeIOSInstallOnOverlay(e){
 
 function loadProviderInfo(){
   try{
-    document.getElementById('pt-hyg').value=localStorage.getItem('sw_hyg')||'';
-    document.getElementById('pt-office').value=localStorage.getItem('sw_office')||'';
+    const savedHyg = localStorage.getItem('sw_hyg')||'';
+    const savedOffice = localStorage.getItem('sw_office')||'';
+    document.getElementById('pt-hyg').value = savedHyg.toLowerCase()==='test' ? '' : savedHyg;
+    document.getElementById('pt-office').value = savedOffice.toLowerCase()==='test' ? '' : savedOffice;
   }catch(e){}
   validateProvider();
 }
@@ -878,21 +901,14 @@ function renderCartQR(url){
 }
 
 function buildChartNote(){
-  const first=document.getElementById('pt-first').value.trim();
-  const hyg=document.getElementById('pt-hyg').value.trim();
-  const office=document.getElementById('pt-office').value.trim()||'your dental office';
-  const date=new Date().toLocaleDateString('en-US',{year:'numeric',month:'long',day:'numeric'});
-  const lines=['Chart Note — smilewize',`Date: ${date}`];
-  lines.push(`Office: ${office}`);
-  if(hyg) lines.push(`Provider: ${hyg}`);
-  lines.push(first?`Patient: ${first}`:'Patient: (anonymous — not captured)','','Products discussed and recommended at today\'s visit:');
+  const lines=['Smilewize Chart Note','Products discussed and recommended at today\'s visit:'];
   const byCat={};
   Object.values(cart).forEach(p=>{(byCat[p.category]=byCat[p.category]||[]).push(p);});
   Object.keys(byCat).forEach(catLabel=>{
-    lines.push('',`${catLabel}:`);
+    lines.push(`${catLabel}:`);
     byCat[catLabel].forEach(p=>{lines.push(`  - ${p.name}${p.brand?' ('+p.brand+')':''}`);});
   });
-  lines.push('','Patient emailed personalized product recommendations via smilewize.');
+  lines.push('','Personalized recommendations shared via www.smilewize.com.');
   return lines.join('\n');
 }
 
@@ -956,8 +972,8 @@ async function sendRecommendation(){
   try{
     if(!WEBHOOK_PATIENT_EMAIL||WEBHOOK_PATIENT_EMAIL==='YOUR_ZAPIER_WEBHOOK_URL_HERE') throw new Error('webhook_not_set');
     await Promise.race([fetch(WEBHOOK_PATIENT_EMAIL,{method:'POST',mode:'no-cors',body:JSON.stringify(payload)}),new Promise(r=>setTimeout(r,4000))]);
-    document.getElementById('success-msg').textContent='Recommendation shared!';
-    document.getElementById('success-detail').textContent=isAnonymous?'':`Email on its way to ${email}`;
+    document.getElementById('success-msg').textContent=isAnonymous?'':'Email Sent!';
+    document.getElementById('success-detail').textContent=isAnonymous?'':`Sent to ${email}`;
     document.getElementById('success-sub').textContent=`${patientLabel} · ${new Date().toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'})}`;
     document.getElementById('chart-note-text').textContent=buildChartNote();
     const cpbtn=document.getElementById('copy-btn');cpbtn.classList.remove('copied');
@@ -1048,9 +1064,27 @@ renderLandingStats();
 // Registers the service worker below — this is what makes browsers reliably
 // offer the "Install" prompt on Android/desktop. It doesn't cache anything
 // yet, so it has zero effect on how the app looks or behaves today.
+//
+// updateViaCache:'none' stops the browser from using its own HTTP cache when
+// checking whether sw.js itself has changed, and the controllerchange
+// listener forces one automatic reload the moment a newer version takes
+// over — this is what makes future updates show up on their own instead of
+// requiring a manual hard refresh or reinstall, like this "test" fix did.
 if('serviceWorker' in navigator){
   window.addEventListener('load', () => {
-    navigator.serviceWorker.register('sw.js').catch(e => console.warn('Service worker registration failed:', e));
+    navigator.serviceWorker.register('sw.js', {updateViaCache:'none'})
+      .then(reg => reg.update())
+      .catch(e => console.warn('Service worker registration failed:', e));
+
+    let hasReloaded = false;
+    navigator.serviceWorker.addEventListener('controllerchange', () => {
+      if(hasReloaded) return;
+      const landing = document.getElementById('s-landing');
+      const isIdleOnLanding = landing && landing.classList.contains('active');
+      if(!isIdleOnLanding) return; // mid-recommendation — pick up the update next time they open the app instead
+      hasReloaded = true;
+      window.location.reload();
+    });
   });
 }
 
