@@ -1,9 +1,18 @@
+<!-- SAVED AS-IS FROM JOSH'S PASTE ON 2026-08-23. This is the confirmed live, current version of the SmileWize hygienist tool (teal Hub-flow redesign), sitting on the test/side GitHub Pages branch as of this date. The version in the Claude Project files (/mnt/project/index.html) is stale/pre-redesign as of this date — do not trust it over this file or a fresh paste from Josh. -->
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>smilewize — Hygienist Tool</title>
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#0FBDA8">
+<link rel="icon" href="favicon-32.png" sizes="32x32">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="smilewize">
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
 html{height:100%}
@@ -148,6 +157,11 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;b
 .feedback-pill{display:inline-flex;align-items:center;gap:5px;background:rgba(255,251,234,0.5);border:1px solid var(--consent-border);border-radius:19px;padding:4.75px 13px;font-size:10.5px;font-weight:500;color:var(--consent-text);cursor:pointer;transition:all 0.15s}
 .feedback-pill:hover{background:rgba(255,243,196,0.65);border-color:var(--consent-border)}
 
+.field-req label{color:var(--text);font-weight:600}
+.stat-eyebrow{font-size:11px;color:var(--text);text-transform:uppercase;letter-spacing:0.06em}
+.quiet-link{font-size:12px;color:var(--text-2);text-decoration:underline;cursor:pointer;background:none;border:none;font-family:inherit;padding:0}
+.quiet-link:hover{color:var(--text)}
+
 .modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.45);display:flex;align-items:center;justify-content:center;padding:1rem;z-index:100;opacity:0;pointer-events:none;transition:opacity 0.2s}
 .modal-overlay.open{opacity:1;pointer-events:all}
 .modal{background:#fff;border-radius:var(--r);padding:1.5rem;width:100%;max-width:420px;box-shadow:0 8px 40px rgba(0,0,0,0.18);transform:translateY(12px);transition:transform 0.2s}
@@ -179,31 +193,59 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;b
 
 <!-- ══ SCREEN 0: LANDING / PROVIDER ══ -->
 <div id="s-landing" class="screen active">
-  <div class="bar" style="padding-bottom:0.5rem">
+  <div class="bar" style="flex-shrink:0;padding-bottom:1rem">
     <div class="bar-logo-wrap" id="logo-placeholder"></div>
     <div><div class="bar-title" style="font-size:36px;font-weight:700"><span style="color:#111111">smile</span><span style="color:#0FBDA8">wize</span></div><div class="bar-sub" style="font-size:16px;color:#4B5563">personalized products from providers who care</div></div>
   </div>
-  <div class="scroll-wrap">
-    <div class="scroll-pane" style="padding-top:0.5rem">
-      <div id="provider-form" style="padding:0 1.25rem">
+
+  <!-- Everything below the logo scrolls if the window is too short to fit it
+       all — on a normal-sized screen this never engages and the flex spacers
+       below do their normal pinning/centering job. Nothing can get clipped. -->
+  <div style="flex:1;min-height:0;overflow-y:auto">
+    <div style="min-height:100%;display:flex;flex-direction:column">
+
+      <div id="provider-form" class="field-req" style="flex-shrink:0;padding:1rem 1.25rem 0">
         <div class="field-group" style="padding:0">
           <div class="field">
             <label>Provider <span style="color:#0FBDA8">*</span></label>
             <input id="pt-hyg" type="text" placeholder="your name" autocomplete="off" oninput="validateProvider()"/>
           </div>
           <div class="field">
-            <label>Office</label>
+            <label>Office <span style="color:#0FBDA8">*</span></label>
             <input id="pt-office" type="text" placeholder="your dental office" autocomplete="off" oninput="validateProvider()"/>
           </div>
         </div>
       </div>
+      <div class="foot" style="flex-shrink:0;background:transparent;border-top:none">
+        <div class="ml"><button class="btn btn-p" id="landing-next" disabled onclick="goToHub()">Start Recommendation →</button></div>
+      </div>
+
+      <div style="flex:1;min-height:8px"></div>
+
+      <!-- Provider/practice stats, filled in live by renderLandingStats() from
+           the two published Sheets CSVs. Stays hidden if there's no saved
+           office yet, or if the fetch fails — never shows stale/wrong data. -->
+      <div id="landing-stats" style="flex-shrink:0;text-align:center;padding:0 1.25rem;display:none">
+        <div class="stat-eyebrow" style="margin-bottom:4px">This month's top practice</div>
+        <div id="stat-top-practice" style="font-size:14.5px;color:var(--text);font-weight:600;margin-bottom:7px"></div>
+        <div id="stat-office-rank" style="font-size:12px;color:var(--text-2);margin-bottom:8px"></div>
+        <div id="stat-provider-list"></div>
+      </div>
+
+      <div style="flex:1;min-height:8px"></div>
+
+      <div style="flex-shrink:0">
+        <div style="text-align:center;padding:0.5rem 1.25rem 0">
+          <button class="quiet-link" onclick="shareApp()">Share this tool</button>
+          <span style="font-size:12px;color:var(--text-3);margin:0 6px">&middot;</span>
+          <button class="quiet-link" onclick="openGetApp()">Get the app</button>
+        </div>
+        <div class="feedback-pill-wrap">
+          <span class="feedback-pill" onclick="openFeedback('landing')">💬 Got feedback, ideas, or spot a bug? Let us know!</span>
+        </div>
+      </div>
+
     </div>
-  </div>
-  <div class="foot" style="background:transparent;border-top:none">
-    <div class="ml"><button class="btn btn-p" id="landing-next" disabled onclick="goToHub()">Start Recommendation →</button></div>
-  </div>
-  <div class="feedback-pill-wrap">
-    <span class="feedback-pill" onclick="openFeedback('landing')">💬 Got feedback, ideas, or spot a bug? Let us know!</span>
   </div>
 </div>
 
@@ -311,6 +353,20 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;b
 </div><!-- /.app -->
 
 <!-- ══ FEEDBACK MODAL ══ -->
+<div class="modal-overlay" id="ios-install-modal" onclick="closeIOSInstallOnOverlay(event)">
+  <div class="modal">
+    <h3>📲 Install smilewize</h3>
+    <p>iPhone and iPad don't allow one-tap installs, but it only takes two taps:</p>
+    <ol style="padding-left:1.2rem;font-size:13px;color:var(--text-2);line-height:1.9;margin-bottom:1rem">
+      <li>Tap the <b style="color:var(--text)">Share</b> icon in Safari's toolbar</li>
+      <li>Scroll down and tap <b style="color:var(--text)">Add to Home Screen</b></li>
+    </ol>
+    <div class="modal-foot">
+      <button class="btn btn-sm btn-p" onclick="closeIOSInstallModal()">Got it</button>
+    </div>
+  </div>
+</div>
+
 <div class="modal-overlay" id="feedback-modal" onclick="closeFeedbackOnOverlay(event)">
   <div class="modal">
     <div id="fb-form-state">
@@ -353,6 +409,13 @@ const CSV_URL               = 'https://docs.google.com/spreadsheets/d/e/2PACX-1v
 const WEBHOOK_PATIENT_EMAIL = 'https://hooks.zapier.com/hooks/catch/26942788/u7o82w2/';   // Zapier: sends patient recommendation email
 const FEEDBACK_WEBHOOK      = 'https://hooks.zapier.com/hooks/catch/26942788/uvfjxra/';   // Zapier: routes hygienist feedback to Slack + support@smilewize.com
 const CART_BASE_URL         = 'https://smilewize.com/cart'; // David's Vercel/Next.js storefront cart
+// Share sends people straight to the working tool — zero detour, since
+// someone sharing this wants a colleague to just try it, not read install
+// instructions first. Computed from the page's own address so it never needs
+// updating, even once a custom domain replaces this GitHub Pages URL.
+const TOOL_URL               = window.location.origin + window.location.pathname;
+const PROVIDER_STATS_URL    = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vSo6Bx5xsxch97Q1kOb2e6Snweb-97CcsoSOWErCuSJTtpLT-qhk5nqDpnR8kBTXMNYkP7FACM6r8zq/pub?gid=58810392&single=true&output=csv';
+const OFFICE_STATS_URL      = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vSo6Bx5xsxch97Q1kOb2e6Snweb-97CcsoSOWErCuSJTtpLT-qhk5nqDpnR8kBTXMNYkP7FACM6r8zq/pub?gid=1017462142&single=true&output=csv';
 
 const REMAP = {
   'Device / Dental Appliance Care':'Specialty / Other','Device/Dental Appliance Care':'Specialty / Other',
@@ -461,7 +524,120 @@ function finalizeCatalog(){
 
 function validateProvider(){
   const hyg=document.getElementById('pt-hyg').value.trim();
-  document.getElementById('landing-next').disabled=!hyg;
+  const office=document.getElementById('pt-office').value.trim();
+  document.getElementById('landing-next').disabled=!(hyg&&office);
+}
+
+// Fetches a published Sheets CSV and returns its data rows (header row skipped).
+// Reuses the same splitCSVLine() parser already used for the product catalog.
+async function fetchStatsCSV(url){
+  const res = await fetch(url);
+  if(!res.ok) throw new Error('stats fetch failed: '+url);
+  const lines = (await res.text()).trim().split('\n');
+  return lines.slice(1).map(splitCSVLine);
+}
+
+async function renderLandingStats(){
+  const block = document.getElementById('landing-stats');
+  const office = (localStorage.getItem('sw_office')||'').trim();
+  if(!office){ block.style.display='none'; return; }
+
+  try{
+    const [providerRows, officeRows] = await Promise.all([
+      fetchStatsCSV(PROVIDER_STATS_URL),
+      fetchStatsCSV(OFFICE_STATS_URL)
+    ]);
+
+    const officeSorted = officeRows
+      .map(r=>({name:(r[0]||'').trim(), count:parseInt(r[1],10)||0}))
+      .filter(r=>r.name)
+      .sort((a,b)=>b.count-a.count);
+    const rankIdx = officeSorted.findIndex(r=>r.name===office);
+    // Office hasn't logged a recommendation yet this month — nothing to show.
+    if(rankIdx===-1){ block.style.display='none'; return; }
+
+    const providerSorted = providerRows
+      .map(r=>({name:(r[0]||'').trim(), office:(r[1]||'').trim(), count:parseInt(r[2],10)||0}))
+      .filter(r=>r.name && r.office===office)
+      .sort((a,b)=>b.count-a.count)
+      .slice(0,3);
+    if(!providerSorted.length){ block.style.display='none'; return; }
+
+    document.getElementById('stat-top-practice').textContent = officeSorted[0].name;
+    document.getElementById('stat-office-rank').textContent = `your office ranks #${rankIdx+1}`;
+    document.getElementById('stat-provider-list').innerHTML = providerSorted.map((p,i)=>{
+      const isFirst = i===0;
+      return `<div style="font-size:12.5px;color:${isFirst?'#B8860B':'var(--text)'};font-weight:${isFirst?'600':'400'};margin-top:${i===0?'0':'1px'}">${i+1}. ${p.name} — ${p.count}</div>`;
+    }).join('');
+    block.style.display='block';
+  }catch(e){
+    console.warn('Landing stats unavailable, hiding scoreboard:', e);
+    block.style.display='none';
+  }
+}
+
+async function shareApp(){
+  const shareData = {
+    title: 'smilewize',
+    text: 'Check out smilewize — personalized product recommendations for dental patients.',
+    url: TOOL_URL
+  };
+  if(navigator.share){
+    try{ await navigator.share(shareData); }catch(e){ /* user cancelled — fine */ }
+  } else {
+    try{
+      await navigator.clipboard.writeText(TOOL_URL);
+      alert('Link copied! Paste it to share with a colleague.');
+    }catch(e){
+      prompt('Copy this link to share:', TOOL_URL);
+    }
+  }
+}
+
+// Chrome/Edge fire this automatically once the page qualifies as installable
+// (manifest + service worker in place). Capturing it lets our own button
+// trigger the browser's real install dialog directly — no separate page needed.
+let deferredInstallPrompt = null;
+window.addEventListener('beforeinstallprompt', (e) => {
+  e.preventDefault();
+  deferredInstallPrompt = e;
+});
+
+function isIOSSafari(){
+  const ua = navigator.userAgent;
+  const isIOS = /iPad|iPhone|iPod/.test(ua) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+  return isIOS && /Safari/.test(ua) && !/CriOS|FxiOS|EdgiOS/.test(ua);
+}
+
+function isStandalone(){
+  return window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true;
+}
+
+async function openGetApp(){
+  if(isStandalone()){
+    alert("You've already got smilewize installed on this device!");
+    return;
+  }
+  if(deferredInstallPrompt){
+    deferredInstallPrompt.prompt();
+    await deferredInstallPrompt.userChoice;
+    deferredInstallPrompt = null;
+    return;
+  }
+  if(isIOSSafari()){
+    document.getElementById('ios-install-modal').classList.add('open');
+    return;
+  }
+  // Browser doesn't support one-tap install (e.g. Firefox desktop) and isn't
+  // iOS Safari either — give people something to go on rather than nothing.
+  alert("Look for an install icon in your browser's address bar, or check your browser's menu for an \"Install\" or \"Add to Home Screen\" option.");
+}
+
+function closeIOSInstallModal(){
+  document.getElementById('ios-install-modal').classList.remove('open');
+}
+function closeIOSInstallOnOverlay(e){
+  if(e.target===document.getElementById('ios-install-modal')) closeIOSInstallModal();
 }
 
 function loadProviderInfo(){
@@ -867,6 +1043,16 @@ function restart(){
 function show(id){document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));document.getElementById(id).classList.add('active');}
 
 loadProviderInfo();
+renderLandingStats();
+
+// Registers the service worker below — this is what makes browsers reliably
+// offer the "Install" prompt on Android/desktop. It doesn't cache anything
+// yet, so it has zero effect on how the app looks or behaves today.
+if('serviceWorker' in navigator){
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('sw.js').catch(e => console.warn('Service worker registration failed:', e));
+  });
+}
 
 function getFallback(){
   return [
