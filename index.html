@@ -1,10 +1,19 @@
-<!-- SAVED AS-IS FROM JOSH'S PASTE ON 2026-08-23. This is the confirmed live, current version of the SmileWize hygienist tool (teal Hub-flow redesign), sitting on the test/side GitHub Pages branch as of this date. The version in the Claude Project files (/mnt/project/index.html) is stale/pre-redesign as of this date — do not trust it over this file or a fresh paste from Josh. -->
+<!-- Smilewize Chairside — the provider-facing chairside webapp (previously called "Hygienist Tool" internally; renamed Sept 2026, see memory for the full product-line naming strategy). Source of truth: fetched directly from the search-update-branch on github.com/PDental/PPDental-personalized-dental-tool-Public3, which is what GitHub Pages actually serves — do not trust a stale copy in /mnt/project/index.html. -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>smilewize — Hygienist Tool</title>
+<title>Smilewize Chairside</title>
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://pdental.github.io/PPDental-personalized-dental-tool-Public3/">
+<meta property="og:title" content="Smilewize Chairside">
+<meta property="og:description" content="The #1 chairside tool used to share personalized oral care recommendations in seconds.">
+<meta property="og:image" content="https://pdental.github.io/PPDental-personalized-dental-tool-Public3/apple-touch-icon.png">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Smilewize Chairside">
+<meta name="twitter:description" content="The #1 chairside tool used to share personalized oral care recommendations in seconds.">
+<meta name="twitter:image" content="https://pdental.github.io/PPDental-personalized-dental-tool-Public3/apple-touch-icon.png">
 <link rel="manifest" href="manifest.json">
 <meta name="theme-color" content="#0FBDA8">
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
@@ -151,8 +160,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;b
 .qr-section{text-align:center;padding:1.25rem 1rem;margin-bottom:1.25rem;background:var(--bg-2);border:1px solid var(--border);border-radius:var(--r)}
 #qr-canvas-wrap{display:inline-block;background:#fff;padding:12px;border-radius:var(--r-sm);box-shadow:0 2px 10px rgba(0,0,0,0.06);max-width:100%}
 #qr-canvas-wrap canvas,#qr-canvas-wrap img{width:min(176px,48vw)!important;height:min(176px,48vw)!important;display:block}
-.qr-shop-link{font-size:14px;font-weight:600;color:var(--success);text-decoration:none;display:inline-block;margin-top:0.75rem}
-.qr-shop-link:hover{text-decoration:underline}
+.qr-shop-link{font-size:14px;font-weight:600;color:var(--success);text-decoration:underline;display:block;margin-top:0.875rem}
 .toast{position:fixed;left:50%;bottom:calc(28px + env(safe-area-inset-bottom));transform:translateX(-50%) translateY(12px);background:var(--success);color:#fff;font-size:13px;font-weight:600;padding:11px 20px;border-radius:999px;box-shadow:0 6px 20px rgba(0,0,0,0.18);opacity:0;pointer-events:none;transition:opacity 0.25s ease, transform 0.25s ease;z-index:500;white-space:nowrap}
 .toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
 
@@ -402,7 +410,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;b
     <div id="fb-thankyou-state" class="modal-thankyou" style="display:none">
       <div class="ty-emoji">🙏</div>
       <h3>Thank you!</h3>
-      <p id="fb-ty-msg">Your feedback helps make smilewize better for every hygienist and patient.</p>
+      <p id="fb-ty-msg">Thanks so much for sharing this with us!</p>
       <div class="ty-email-note" id="fb-ty-email-note"></div>
       <button class="btn btn-p btn-sm" onclick="closeFeedback()">Close</button>
     </div>
@@ -624,8 +632,8 @@ function showShareToast(){
 
 async function shareApp(){
   const shareData = {
-    title: 'smilewize',
-    text: 'Check out smilewize — personalized product recommendations for dental patients.',
+    title: 'Smilewize Chairside',
+    text: 'The #1 chairside tool used to share personalized oral care recommendations in seconds.',
     url: TOOL_URL
   };
   if(navigator.share){
@@ -1062,11 +1070,11 @@ async function submitFeedback(){
   document.getElementById('fb-form-state').style.display='none';
   const tyNote=document.getElementById('fb-ty-email-note');
   if(replyEmail){
-    document.getElementById('fb-ty-msg').textContent='Your feedback helps make smilewize better for every hygienist and patient.';
+    document.getElementById('fb-ty-msg').textContent='Thanks so much for sharing this with us!';
     tyNote.textContent=`We'll follow up at ${replyEmail} from support@smilewize.com`;
     tyNote.style.display='block';
   } else {
-    document.getElementById('fb-ty-msg').textContent='Thank you for your input! Every submission helps us improve smilewize.';
+    document.getElementById('fb-ty-msg').textContent='Thanks so much for sharing this with us!';
     tyNote.style.display='none';
   }
   document.getElementById('fb-thankyou-state').style.display='block';
