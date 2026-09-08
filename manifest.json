@@ -1,6 +1,6 @@
 {
-  "name": "SmileWize",
-  "short_name": "SmileWize",
+  "name": "Smilewize Chairside",
+  "short_name": "Smilewize",
   "start_url": "./",
   "display": "standalone",
   "background_color": "#111418",
