@@ -13,10 +13,24 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="smilewize">
+<script>
+/* iOS Safari's 100dvh doesn't always recalculate correctly when the
+   bottom toolbar shows/hides, which can leave the Share button hidden
+   behind it. This measures the actual visible height directly and
+   keeps it in sync, as a backup to the CSS dvh unit below. */
+function setAppVH(){
+  const h=(window.visualViewport?window.visualViewport.height:window.innerHeight)*0.01;
+  document.documentElement.style.setProperty('--app-vh',h+'px');
+}
+setAppVH();
+window.addEventListener('resize',setAppVH);
+window.addEventListener('orientationchange',setAppVH);
+if(window.visualViewport) window.visualViewport.addEventListener('resize',setAppVH);
+</script>
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
 html{height:100%}
-body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:#F0F4F8;height:100dvh;display:flex;align-items:flex-start;justify-content:center;padding:0;overflow:hidden}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:#F0F4F8;height:100dvh;height:calc(var(--app-vh, 1vh) * 100);display:flex;align-items:flex-start;justify-content:center;padding:0;overflow:hidden}
 :root{
   --teal:#0FBDA8;--teal-deep:#0C9686;--teal-deep-hover:#0A7F72;--teal-mint:#E4F9F3;--teal-tint:#E7F8F5;--teal-text:#085041;
   --success:#0F6E56;--success-light:#E1F5EE;
@@ -28,10 +42,10 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;b
   --border:#E5E7EB;--border-2:#D1D5DB;
   --r:14px;--r-sm:8px;
 }
-.app{background:#E9E7E1;width:100%;max-width:480px;height:100dvh;display:flex;flex-direction:column;overflow:hidden;position:relative}
+.app{background:#E9E7E1;width:100%;max-width:480px;height:100dvh;height:calc(var(--app-vh, 1vh) * 100);display:flex;flex-direction:column;overflow:hidden;position:relative}
 @media (min-width:600px){
   body{padding:1.5rem 1rem;overflow:auto}
-  .app{height:min(100dvh - 3rem,720px);max-height:720px;border-radius:var(--r);box-shadow:0 4px 24px rgba(0,0,0,0.08)}
+  .app{height:min(100dvh - 3rem,720px);height:min(calc(var(--app-vh, 1vh) * 100 - 3rem),720px);max-height:720px;border-radius:var(--r);box-shadow:0 4px 24px rgba(0,0,0,0.08)}
 }
 .screen{display:none;flex-direction:column;height:100%;min-height:0}
 .screen.active{display:flex}
@@ -137,9 +151,10 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;b
 .qr-section{text-align:center;padding:1.25rem 1rem;margin-bottom:1.25rem;background:var(--bg-2);border:1px solid var(--border);border-radius:var(--r)}
 #qr-canvas-wrap{display:inline-block;background:#fff;padding:12px;border-radius:var(--r-sm);box-shadow:0 2px 10px rgba(0,0,0,0.06);max-width:100%}
 #qr-canvas-wrap canvas,#qr-canvas-wrap img{width:min(176px,48vw)!important;height:min(176px,48vw)!important;display:block}
-.qr-caption{font-size:13px;font-weight:600;color:var(--text);margin-top:0.75rem}
-.qr-link{font-size:11px;color:#0FBDA8;text-decoration:none;word-break:break-all;display:inline-block;margin-top:2px;white-space:nowrap}
-.qr-link:hover{text-decoration:underline}
+.qr-shop-link{font-size:14px;font-weight:600;color:var(--success);text-decoration:none;display:inline-block;margin-top:0.75rem}
+.qr-shop-link:hover{text-decoration:underline}
+.toast{position:fixed;left:50%;bottom:calc(28px + env(safe-area-inset-bottom));transform:translateX(-50%) translateY(12px);background:var(--success);color:#fff;font-size:13px;font-weight:600;padding:11px 20px;border-radius:999px;box-shadow:0 6px 20px rgba(0,0,0,0.18);opacity:0;pointer-events:none;transition:opacity 0.25s ease, transform 0.25s ease;z-index:500;white-space:nowrap}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
 
 .chart-note-section{border:1px solid var(--border);border-radius:var(--r-sm);padding:1rem;margin-bottom:1rem}
 .chart-note-header{display:flex;align-items:center;margin-bottom:0.5rem}
@@ -196,7 +211,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;b
 <div id="s-landing" class="screen active">
   <div class="bar" style="flex-shrink:0;padding-bottom:1.5rem">
     <div class="bar-logo-wrap" id="logo-placeholder"></div>
-    <div><div class="bar-title" style="font-size:36px;font-weight:700"><span style="color:#111111">smile</span><span style="color:#0FBDA8">wize</span></div><div class="bar-sub" style="font-size:16px;color:#4B5563">personalized products from providers who care</div></div>
+    <div><a href="https://smilewize.com" target="_blank" rel="noopener" class="bar-title" style="font-size:36px;font-weight:700;text-decoration:none;display:inline-block"><span style="color:#111111">smile</span><span style="color:#0FBDA8">wize</span></a><div class="bar-sub" style="font-size:16px;color:#4B5563">personalized products from providers who care</div></div>
   </div>
 
   <!-- Everything below the logo scrolls if the window is too short to fit it
@@ -254,7 +269,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;b
 <div id="s-hub" class="screen">
   <div class="bar">
     <div class="bar-logo-wrap"></div>
-    <div><div class="bar-title app-logo"><span style="color:#111111">smile</span><span style="color:#0FBDA8">wize</span></div><div class="bar-sub">personalized products from providers who care</div></div>
+    <div><a href="https://smilewize.com" target="_blank" rel="noopener" class="bar-title app-logo" style="text-decoration:none;display:inline-block"><span style="color:#111111">smile</span><span style="color:#0FBDA8">wize</span></a><div class="bar-sub">personalized products from providers who care</div></div>
   </div>
   <div id="load-state" class="loading"><div class="load-spin"></div><p>Loading products…</p></div>
   <div class="scroll-wrap" id="hub-scroll-wrap" style="display:none">
@@ -310,7 +325,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;b
 <div id="s-success" class="screen">
   <div class="bar">
     <div class="bar-logo-wrap"></div>
-    <div><div class="bar-title app-logo"><span style="color:#111111">smile</span><span style="color:#0FBDA8">wize</span></div><div class="bar-sub" id="success-sub">personalized products from providers who care</div></div>
+    <div><a href="https://smilewize.com" target="_blank" rel="noopener" class="bar-title app-logo" style="text-decoration:none;display:inline-block"><span style="color:#111111">smile</span><span style="color:#0FBDA8">wize</span></a><div class="bar-sub" id="success-sub">personalized products from providers who care</div></div>
   </div>
   <div class="scroll-wrap">
     <div class="scroll-pane">
@@ -319,11 +334,10 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;b
 
         <div class="qr-section">
           <div id="qr-canvas-wrap"></div>
-          <p class="qr-caption">Scan to shop this cart</p>
-          <a id="qr-link" class="qr-link" href="#" target="_blank" rel="noopener">smilewize.com/cart</a>
+          <a id="qr-link" class="qr-shop-link" href="#" target="_blank" rel="noopener">Shop this cart</a>
         </div>
 
-        <div class="success-banner">
+        <div class="success-banner" id="success-banner">
           <p id="success-msg">Recommendation sent!</p>
           <span id="success-detail"></span>
         </div>
@@ -352,6 +366,8 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;b
 </div>
 
 </div><!-- /.app -->
+
+<div class="toast" id="share-toast">Sharing is caring! 🙌</div>
 
 <!-- ══ FEEDBACK MODAL ══ -->
 <div class="modal-overlay" id="ios-install-modal" onclick="closeIOSInstallOnOverlay(event)">
@@ -597,6 +613,15 @@ async function renderLandingStats(){
   }
 }
 
+let shareToastTimer=null;
+function showShareToast(){
+  const t=document.getElementById('share-toast');
+  if(!t) return;
+  t.classList.add('show');
+  clearTimeout(shareToastTimer);
+  shareToastTimer=setTimeout(()=>t.classList.remove('show'),2500);
+}
+
 async function shareApp(){
   const shareData = {
     title: 'smilewize',
@@ -604,7 +629,7 @@ async function shareApp(){
     url: TOOL_URL
   };
   if(navigator.share){
-    try{ await navigator.share(shareData); }catch(e){ /* user cancelled — fine */ }
+    try{ await navigator.share(shareData); showShareToast(); }catch(e){ /* user cancelled — fine */ }
   } else {
     try{
       await navigator.clipboard.writeText(TOOL_URL);
@@ -907,7 +932,7 @@ function renderCartQR(url){
     wrap.appendChild(canvas);
   });
   const link=document.getElementById('qr-link');
-  link.href=url;link.textContent=url.replace(/^https?:\/\//,'');
+  link.href=url;
 }
 
 function buildChartNote(){
@@ -977,11 +1002,12 @@ async function sendRecommendation(){
     flatFields[`product_${i+1}_id`]=items[i]?items[i].id:'';
   }
   flatFields.additional_products=items.slice(5).map(p=>`${p.name} (${p.id})`).join(', ');
-  const cartUrl=`${CART_BASE_URL}?interaction_id=${interactionId}`;
+  const cartUrl=`${CART_BASE_URL}?interaction_id=${interactionId}${allProductIds.length?'&ids='+encodeURIComponent(allProductIds.join(',')):''}`;
   const payload={interaction_id:interactionId,cart_url:cartUrl,product_ids:allProductIds,...flatFields,patient_name:patientLabel,patient_email:email,is_anonymous:isAnonymous,hygienist:hyg,office_name:office,date:new Date().toLocaleDateString('en-US',{year:'numeric',month:'long',day:'numeric'}),total_products:items.length,recommendations:recs};
   try{
     if(!WEBHOOK_PATIENT_EMAIL||WEBHOOK_PATIENT_EMAIL==='YOUR_ZAPIER_WEBHOOK_URL_HERE') throw new Error('webhook_not_set');
     await Promise.race([fetch(WEBHOOK_PATIENT_EMAIL,{method:'POST',mode:'no-cors',body:JSON.stringify(payload)}),new Promise(r=>setTimeout(r,4000))]);
+    document.getElementById('success-banner').style.display=isAnonymous?'none':'block';
     document.getElementById('success-msg').textContent=isAnonymous?'':'Email Sent!';
     document.getElementById('success-detail').textContent=isAnonymous?'':`Sent to ${email}`;
     document.getElementById('success-sub').textContent=`${patientLabel} · ${new Date().toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'})}`;
